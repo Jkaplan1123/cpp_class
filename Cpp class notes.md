@@ -99,9 +99,112 @@ Example: `cin >> data1 >> data2` assigns the value of the input to the variables
 - white space is ignored (?)
 <!--I am unclear if the following is true: - Characters entered using the keyboard will only be processed when the *enter* key is pressed. `cin` also treats white space like hitting *enter*.-->
 
+## Section 6 - Variables and Constants
 
+### Variables
+
+#### Computer Structure
+- A computer has memory, a CPU, and a bus that allows the movement of data between them
+- RAM is a contiguous block of storage, can be thought of as having memory cells where each cell has an associated location
+- Most programming languages allow you to associate a name with a memory location
+
+#### Variable Overview
+A variable is an abstraction for a memory language that allow programmers to use meaningful names and not memory addresses.
+
+- Variables have a type (e.g. integer, string, etc.) and a value (e.g. 10, "Text", etc.).
+	- The type of the variable must be declared before they are used. 
+		- you can use object-oriented programming to create your own variable types
+	- The value of a variable may change
+
+#### Naming Rules
+- can contain letters, numbers, underscores
+- must begin with a letter or an underscore.
+	- can **never** begin with a number
+- cannot use C++ reserved keywords
+- Cannot redeclare a name in the same scope.
+- be consistent with your naming conventions
+	- your organization may have a style guide
+	- use either Camel Case or underscores to separate words. Choose one and stick with it
+- avoid beginning names with underscores
+- Use meaningful names - not too long or too short
+	- make sure your variable names are very descriptive 
+
+[C++ Variable Naming Conventions](https://www.geeksforgeeks.org/naming-convention-in-c/) 
+
+#### Declaring and Initializing Variables
+
+- Best practice to declare a variable near where you first use is.
+- Don't use a variable before initializing it. This will cause problems.
+
+`int age;` - uninitialized
+
+Multiple ways to initialize a variable that are all valid:
+
+- `int age = 21;` - C-like initialization
+- `int age (21);` - Constructor initialization
+- `int age {21};` - C++11 list initialization syntax
+	- This is probably the best way to start
+	- List initialization helps catch overflow errors
+
+Note: remember that C++ is case sensitive
+
+#### Global Variables
+- global variables are automatically initialized to `0`.
+- gloabl variables can be accessed by any part of the program
+- if there is a local variable with the same name as the global variable, the compiler will use the local variable
+- best practice is to avoid global variables when possible
+
+#### C++ Fundamental Data Types
+
+[C++ Variable Types](https://cplusplus.com/doc/tutorial/variables/)
+
+- the size and precision of C++'s primitive data types are largely dependent on the platform you're working on and the complier you are using
+- `# include <climits>` should have the size and precision of the data types for your specific compiler
+- The more bits allocated to a type, the more values that can be represented and the more storage required
+	- need to be careful about overflow 
+
+###### Character
+- used to represnt single characters
+- Basic `char` data type is 8 bit, but can be bigger if necessary
+- C++ uses single quotes (not double quotes) for the single `char` type
+	- double quotes makes it a string
+
+###### Integer
+- used to represent whole numbers
+- both signed and unsigned integers are supported
+- different types depending on size/precision needed and if signed or unsigned is need
+- by default, all integers are signed
+
+###### Float
+- `double`
+
+###### Boolean
+- `0` is False
+- Anything non-zero is True
+
+#### `sizeof` operator
+- the `sizeof` operator tells you the size in bytes of a type or a variabs
+
+
+### Constants
+- constants cannot have their value changed once declaired
+	- useful for 
+- Like C++ variables, constants have names, occupy storage, are (usually) typed
+
+#### Types of Constants
+- literal constants
+	- do not refer to variables, they are the values themselves
+
+in the expresion: `const int z {5};`, `z` is a constant and `5` is in integer literal
+
+- declared constants (`const` keyword)
+	- `const int months_in_year {12};` 
+- constant expressions (`constexpr` keyword)
+- enumerated constants (`enum` keyword)
+- Defined constants (`#define`)
+	- used in legacy C++ code. Don't use in Modern C++ 
  
- ## Markdown Format Examples
+## Markdown Help
  
  [link](www.google.com)
  
