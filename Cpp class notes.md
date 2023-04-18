@@ -203,7 +203,207 @@ in the expresion: `const int z {5};`, `z` is a constant and `5` is in integer li
 - enumerated constants (`enum` keyword)
 - Defined constants (`#define`)
 	- used in legacy C++ code. Don't use in Modern C++ 
+
+## Section 7 - Arrays and Vectors
+
+### Arrays
+
+* An array is a compound data type or data struture - a collection of elements
+* All elements must be of the same time (`int`, `double`, etc.)
+* Each element can be accessed directly
+
+#### How Arrays Work
+- the name of the array represents the location of the first element in the array
+
+```
+int numbers [10] {0};
+cout << numbers << endl;
+```
+
+will output a hexidecimal number corresponding to the memory address.
+
+
+- The index represents the offset from the beginning of the array
+- C++ performs a calculation to find the correct element. Remeber, no bounds checking. 
+
+#### Characteristics of an Array
+
+* Fixed Size
+	* if you do not know how many elements you will need to have in your array, then you can make the array large enough that you are not likley to exceed the size
+* Ordered
+* Elements are all the same type (`int`, `double`, etc.)
+* Stored contiguously in memory
+* Individual elements can be accessed by their position or index
+	* First element at index 0
+	* Last  element at index $n-1$
+*  Arrays do not check to see if you are out of bounds - if you go over bounds, 
+*  Arrays are very efficient
+*  Arrays are not commonly used in modern C++
+
+#### Declaring and initializing arrays
+
+Best practices it to initialize arrays when you declare them
+
+##### Declaring: 
+###### Format
+```
+Element_Type array_name [constant integer number of elements]
+```
+
+The complier must know the number of items in the array at compile time. The array cannot be sized based off a changing value in the program. 
+
+###### Examples
+`int test_scores [5]` creates an array of five elements with the name *test_scores*
+
+```
+const int days_in_year {365};  // Creates a constant with the value 365
+
+double hi_temp [days_in_year]; // Creates an array of doubles with the number of elements equal to days_in_year
+```
+
+##### Initializing: 
+###### Format
+```
+Element_Type array_name [constant integer number of elements] {init list}
+```
+
+This creates an array named *array_name* made up of $n$ elements of type `Element_Type` and that have the values found in the initialization list `{init list}`.
+
+The complier must know the number of items in the array at compile time. The array cannot be sized based off a changing value in the program.
+
+If you have an array of size $n$ and `{init list}` has $m$ elements (where $m < n$), then the first $m$ elements of the array will correspond to the values in `{init list}` and the $m + 1$ to $n$ elements will be initialized to $0$. 
+
+###### Examples
+`int test_scores [5] {100, 95, 99, 87, 88};` creates an array of five elements with the name *test_scores* whose elements are the integers *100, 95, 99, 87*, and *88* in that order. 
+
+`int high_score_per_level [10] {3, 5};` creates an array of **10** integers with the name *high_score_per_level*. The first two elements of the array are *3* and *5* and the remaining elements are *0*.
+
+`double hi_temp [days_in_year] {0};` Initializes all the values in the array to 0
+
+`double hi_temp [days_in_year] {};` Initializes all the values in the array to 0
+
+`int another_array [] {1, 2, 3, 4, 5};` If all the elements of the array are provided when compiling, then the size of the array can be automatically calculated  
+
+#### Array Elements
+
+##### Accessing 
+
+```
+array_name [element_index]
+```
+
+For example, `my_array [4]` would access the fifth (don't forget we are indexing from 0) element in the array *my_array*
+
+##### Reassigning
+
+```
+array_name [element_index] = new_value
+```
+
+This assigns the chosen element in the array a new value. Note the new value must be of the same `type` as the array.
+
+#### Multi-Dimensional Arrays
+
+##### Initializing and Declaring
+```
+Element_Type array_name [dim1_size][dim2_size]{init list}
+```
+
+For multi-dimensional arrays, the `{init list}` is a list of lists
+
+###### Example
+
+```
+int movie_rating [3][4] {
+	{0, 4, 3, 5},
+	{2, 3, 3, 5},
+	{1, 4, 4, 5}
+};
+```
+
+##### Accessing
+To access the nth row and mth column of a 2x2 array, the syntax is: `array_name [n][m]`. This syntax can be extended to arrays of arbitrarily many dimensions
+
+
+
+
+### Vectors
+
+#### Characteristics of Vectors
+
+- Vectors are dynamic arrays meaning they can grow and shrink in size at execution time
+- Very efficient
+- Vector elements are indivdually accessable
+	- Index starting from 0
+- No built-in out of bounds checking, but their are functions to do bounds check
+- Can use functions like sort, reverse, find, and more
+- Vectors are objects 
+	- similar syntax to arrays, but slightly different
+
+
+#### Declaring and Initializing
+
+- Must include the `<vector>` library using the `#include <vector>` preprocessor directive
+	- vector types are part of the standard (`std`) library - must use the `std` namespace or the scope resolution operator (`::`). 
+
+##### Syntax
+
+```
+vector <type> vector_name;
+```
+
+- Do not need to declare the number of elements in the vector
+- For vectors containing `integer` and `float`/`double` types, the vector will auto-initialize all elements to 0 if there is not an initialization list 
+- There are many other ways to declare vectors
+
+
+###### Examples
+
+`vector <char> vowels {'a', 'e', 'i', 'o', 'u'};` creates a vector whose initial elements are *a*, *e*, *i*, *o*, and *u*.
+
+`vector <double> hi_temperatures (365, 80.0);` creates a vector that initially has 365 entires all with a value of 80.0.
+
+
+#### Accessing vectory elements and vector methods
+
+##### Array Syntax
+
+`vector_name [element_index]`
+
+##### `at` method: `vector_name.at(element_index)`
+
+- this is a method in the `vector` object
+- the `at` method does provide bounds checking during runtime
  
+##### `push_back` method
+
+`vector_name.push_back(new_element)`: appends *new_element* to the end of the vector
+- remember: `type(element)` must be the same as all the elements already in the vector
+
+##### `size` method
+
+`vector_name.size()`: tells you how many elements are in the vector
+
+#### Multi-Dimensional Vectors
+
+- a mult-dimensional vector is a vector of vectors
+
+```
+vector <vector <int>> movie_ratings {
+	{0, 4, 3, 5},
+	{2, 3, 3, 5},
+	{1, 4, 4, 5}
+};
+```
+
+- can use array syntax, or the `at` method to access an element
+
+`movie_ratings[2][3]` and `movie_ratings.at(2).at(3)` both access the element in the 3rd row and 4th column of *movie_ratings*.
+
+[Initializing Vectors](https://www.freecodecamp.org/news/cpp-vector-how-to-initialize-a-vector-in-a-constructor/)
+
+
+
 ## Markdown Help
  
  [link](www.google.com)
