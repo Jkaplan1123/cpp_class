@@ -1,0 +1,3 @@
+/Users/jack/Documents/GitHub/cpp_class/TemplateWorkspace/TemplateProject/main.cpp
+/Users/jack/Documents/GitHub/cpp_class/TemplateWorkspace/Project2/main.cpp
+/Users/jack/Documents/GitHub/cpp_class/TemplateWorkspace/Project1/main.cpp
