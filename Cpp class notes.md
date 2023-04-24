@@ -341,6 +341,7 @@ To access the nth row and mth column of a 2x2 array, the syntax is: `array_name 
 	- similar syntax to arrays, but slightly different
 
 
+
 #### Declaring and Initializing
 
 - Must include the `<vector>` library using the `#include <vector>` preprocessor directive
@@ -365,6 +366,8 @@ vector <type> vector_name;
 
 
 #### Accessing vectory elements and vector methods
+
+- When you add elements to a vector, you make a copy of what you are inserting
 
 ##### Array Syntax
 
@@ -402,12 +405,331 @@ vector <vector <int>> movie_ratings {
 
 [Initializing Vectors](https://www.freecodecamp.org/news/cpp-vector-how-to-initialize-a-vector-in-a-constructor/)
 
+## Section 8 - Expressions, Statements, and Operators 
 
+### Expressions
+
+- most basic building blocks in programming
+- a sequence of operators and operands that compute a value
+
+### Statements and Block Statements
+
+- a complete line of code that performs some action
+- usually terminated with a semi-colon
+
+
+Examples: declaration, assignment, expression, if statement
+
+### Operators
+
+- assignment operator `=`: assigning the right hand side of an expression to the left hand side of an expression. 
+	- the statement `a = 10;` assigns the value of 10 to the variable `a`.
+	- Do not confuse assignment with initialization. Assignment changes the value of an existing variable.
+		- l-value - the contents of a value
+		- r-value - the location of that variable
+	- can chain expressions together: `a = b = 10;` assigns 10 to `b` and returns `10`, it then assigns 10 to `a`
+		- assignment operators and expressions return the value that was assigned
+		- assignment operators and expressions associate right to left 
+		- chaining is generally not a good idea
+- arrethmatic operators (`+`, `-`, `*`, `/`, `%`)
+	- no built-in exponential operator
+	- Modular operator (`%`) only works with integers
+	- be careful when doing division with integers - C++ will always truncate off any decimal that occurs in operations between two integers. 
+	- For example:
+
+
+	```
+	5/10 // Ouputs 0
+	
+	5.0 / 10.0 // Outputs 0.5
+	```
+	 
+	- Order of operations is still PEMDAS
+
+#### Increment and Decrement Operator
+
+##### Increment Operator (`++`)
+
+- means: increase value by 1
+- can be used with integers, floating point numbers, or pointers
+- Prefix notation: `++num` - increment variable before you use it
+	- Example 1:
+
+		```
+		counter = 10		
+		result = ++counter
+		
+		cout << counter << endl; // outputs 11
+		cout << result << endl; // outputs 11
+		``` 	 
+	- Example 2:
+		
+		```
+		result = ++counter + 10;
+		```
+		
+		Is the equivalent of saying
+		
+		```
+		counter = counter + 1;
+		result = counter + 10;
+		```
+		
+		Meaning, in the example:
+		
+		```
+		counter = 10		
+		result = ++counter + 10
+		
+		cout << counter << endl; // outputs 11
+		cout << result << endl; // outputs 21
+		``` 	
+		
+- Postfix notation: `num++` - increment variable after you use it
+	- Example 1: 	
+
+		```
+		counter = 10		
+		result = counter++
+		
+		cout << counter << endl; // outputs 11
+		cout << result << endl; // outputs 10
+		``` 	
+		
+	- Example 2:
+		
+		```
+		result = counter++ + 10;
+		```
+		
+		Is the equivalent of saying
+		
+		```
+		result = counter + 10;
+		counter = counter + 1;
+		```
+		
+		Meaning, in the example:
+		
+		```
+		counter = 10		
+		result = counter++ + 10
+		
+		cout << counter << endl; // outputs 11
+		cout << result << endl; // outputs 20
+		``` 	
+		
+		
+		--
+	
+- Be careful with this operator. 
+- Don't use twice with the same variable in the same statement
+
+
+#### Decrement Operator (`--`):
+
+same as the increment operator except it decreases value by 1
+
+### Mixed Type Expressions
+- C++ operations occur on the same type operands - if operands are of different types, C++ will convert one
+	- Be careful of this. It could affect calculation results
+	- C++ will attempt to automatically convert types. If it can't, a complier error will occur
+
+#### Conversions
+- Higher vs. lower types are based on the size of the values the type can hold
+	- `long double` > `double` > `float` > `unsigned long` > `long` > `unsigned int` > `int`
+	- `short` and `char` types are always converted to int
+- Type Coercion : conversion of one operand to another data type
+	- promotion: conversion to a higher type (the lower types value should fit into the higher types value)
+		- used in mathematical expressions
+		- Example: doing math with a double (`beta`) and an integer (`alpha`)
+
+		```
+		int alpha {5};
+		double beta {10};
+		
+		cout << alpha / beta << endl; \\ outputs the double 0.5
+		cout << alpha + beta << endl; \\ outputs the double 15
+		```
+			
+	- Demotion: conversion to a lower type
+		- Used with assignment to a lower type   
+
+		Example: assigning a double literal (`1.5`) to integer variable (`alpha`).
+
+		```
+		int alpha {0};
+		
+		alpha = 1.5;
+		
+		cout << alpha << endl \\ outputs the integer 1
+		```
+		
+	- Explicit Type Casting - static_cast<type>
+
+		```
+		int total_amount {100};
+		int total_number {8};
+		double average {0.0};
+		```
+		
+		```
+		average = total_amount / total_number;
+		cout << average << endl;  // displays 12
+		```
+		
+		Even though `average` is a double, it only displays 12 because `total_amount / total_number` is dividing two integers division, leading to the truncated result 12. This code could be rewritten as:
+		
+		```
+		int temp {0};
+		temp = total_amount / total_number
+		
+		cout << temp << endl; // outputs 12
+		
+		average = temp;
+		cout << average << endl; // outputs 12
+		```
+		
+		You can use `static_cast<type>(variable)` to convert one data type to another.
+		
+		```
+		average = static_cast<double>(total_amount) / total_number;
+		cout << average << endl;  // displays 12.5
+		```
+		
+		In this case, `static_cast<double>(total_amount)` converts `total_amount` from an `int` into a `double`. This means that the subsequent division `total_amount / total_number` is not dividing to integers but rather dividing a double by an integer. This causes `total_number` to get promoted to a double as well. The resulting output is therefore a double. `static_cast<type>` is a cleaner way of doing:
+		
+		```
+		int total_amount {100};
+		int total_number {8};
+		double average {0.0};
+		
+		double total_amount_double = total_amount; // create a double type variable with the same value as total_amount
+		
+		average = total_amount_double / total_number;
+		
+		cout << average << endl;  // displays 12.5		
+		```
+
+### Comparison Operators
+
+| Operator | Meaning                  |
+|----------|--------------------------|
+|    ==    | Equal To                 |
+|    !=    | Not Equal To             |
+|     >    | Greater Than             |
+|     <    | Less Than                |
+|    >=    | Greater Than or Equal To |
+|    <=    | Less Than or Equal To    |
+
+These operators compare the left side of the expression to the right side of the expression and see if the comparison is true or false. The result is the corresponding boolean.
+
+For example: `a == b;` outputs true (`1`) if `a` and `b` have the same value and outputs false (`0`) if `a` and `b` do not have the same value.
+
+- you can compare two values of different types (e.g. a `double` and an `int`). This is because the `int` gets promoted to a `double`
+- when comparing doubles, be careful about approximations of numbers:`12.0 == 11.999999999999999999` may return `true` because of how computer approximate floating point numbers
+- You can use `boolalpha` command to convert the ouput from `0` and `1` to `false` and `true`. The `noboolalpha` command converts the output from `false` and `true` to `0` and `1`. These commands are located in the `std` namespace. 
+
+```
+cout << (num1 == num2) << endl; // displays 0 or 1
+
+cout << std::boolalpha; 
+cout << (num1 == num2) << endl; // displays true or false
+
+cout << std::noboolalpha;
+cout << (num1 == num2) << endl; // displays 0 or 1
+```
+
+- `<=>` is a three-way comparison operator that was introduced in C++20. `a <=> b` outputs:
+	- a value less than zero if `a` is less than `b` 
+	- a zero (0) if `a` is equal to `b` 
+	- a value greater than zero if `a` is greater than `b` 
+
+### Logical Operators
+
+NOT, AND and OR
+
+- Operate on boolean expressions and evaluate to a boolean operator themselves
+- each operator can be written by its keyword syntax or using the operator symbol syntax 
+	- most code uses the operator syntax
+
+| Operator    | Keyword Syntax | Operator Syntax |
+|-------------|----------------|-----------------|
+| Logical NOT | not            | !               |
+| Logical AND | and            | &&              |
+| Logical OR  | or             | \|\|            |
+
+
+Precedence (Order of Operations)
+- `not` has higher precedence than `and`, which has higher precedence than `or` (`not` > `and` > `or`)
+	- to be safe, use parenthesis to make sure that your meaning is clear 
+- `not` is a unitary operator
+- `and` and `or` are binary operators
+
+```
+alpha >= 10 && alpha < 20 // returns true if 10 <= alpha < 20
+```
+
+**Short-Circuit Evaluation:** when evaluating a logical expression C++ stops as soon as the result is known
+
+Examples:
+
+```
+// expr1, expr2, expr3 are expressions that evaluate to booleans
+expr1 = false
+expr2 = true
+expr3 = true
+
+expr1 && expr2 && expr3 
+
+```
+
+In the above example, `expr1` evaluates to `false` which means that `expr1 && expr2 && expr3` can never be true. C++ will therefore only evalue `expr1` (note, `expr1`, `expr2`, and `expr3` are stand-ins for expressions that will evaluate to a boolean.
+
+```
+expr1 || expr2 || expr3
+```
+
+In the above example, C++ will only evaluate `expr1 || expr2` because `expr1 || expr2` evaluates to `true` which means that `expr1 || expr2 || expr3` can never be true.
+
+### Compount Assignment Operators
+
+Compound assignment operators combine performing some operation and assignment into one step. The format `op=`, where *op* is the stand in for an operator.
+
+| Operator | Example  | Meaning     |
+|----------|----------|-------------|
+| `+=`     | `a += b` | `a = a + (b)` |
+| `-=`     | `a -= b` | `a = a - (b)` |
+| `*=`     | `a *= b` | `a = a * (b)` |
+| `/=`     | `a /= b` | `a = a / (b)` |
+| `%=`     | `a %= b` | `a = a % (b)` |
+
+In the above table, `b` refers to the entirety of the right hand side. Treat it as if it were in parentheses
+
+Note: this is not all the operators that can work as compound operators. 
+
+### Operator Precedence
+
+- Operator precedence is which operators are higher in the list of order of operation (e.g. multiply before you add)
+- *associativity* is the "left to right" or "right to left" aspect of the order of operations for operators with the same precedence
+	- e.g. you always do multiplication and division left to right
+- Best bet is to use parenthesis to remove any confusion
+
+Please see [this link](https://en.cppreference.com/w/cpp/language/operator_precedence) for a table documenting operator precedence and associativity in C++.
+
+[This link](https://www.programiz.com/cpp-programming/operators-precedence-associativity) also has the table as well as a bit of an explanation.
 
 ## Markdown Help
  
  [link](www.google.com)
  
+ 
+### Code
+#### Multi-line code
 ```
 code goes here
 ```
+
+#### In-line code
+
+`code goes here`
