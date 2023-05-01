@@ -719,6 +719,373 @@ Please see [this link](https://en.cppreference.com/w/cpp/language/operator_prece
 
 [This link](https://www.programiz.com/cpp-programming/operators-precedence-associativity) also has the table as well as a bit of an explanation.
 
+## Section 9 - Controlling Program Flow
+
+### If Statements
+
+```
+if (condition1) {
+  // block of code to be executed if condition1 is true
+} else if (condition2) {
+  // block of code to be executed if the condition1 is false and condition2 is true
+} else {
+  // block of code to be executed if the condition1 is false and condition2 is false
+}
+```
+
+### Switch-Case Statement
+
+Switch Statement 
+
+```
+switch(control_expression) {
+  case x:
+    // code block
+    break;
+  case y:
+    // code block
+    break;
+  default:
+    // code block
+}
+```
+
+- `switch` expression is evaluated once, the value of the expression is compared with the values of each `case`
+	- `control_expression` and `case` must evaluate to an integral type or an `enumeration` type
+		- `integral` type includes whole numbers and characters
+		-	[enumeration type](https://www.geeksforgeeks.org/enumeration-in-cpp/)
+	- `case` statements must be known at compile time - must be constant or literals
+- If there is a match, the associated block of code is executed
+
+	```
+	int day = 4;
+	switch (day) {
+	  case 1:
+	    cout << "Monday";
+	    break;
+	  case 2:
+	    cout << "Tuesday";
+	    break;
+	  case 3:
+	    cout << "Wednesday";
+	    break;
+	  case 4:
+	    cout << "Thursday";
+	    break;
+	  case 5:
+	    cout << "Friday";
+	    break;
+	  case 6:
+	    cout << "Saturday";
+	    break;
+	  case 7:
+	    cout << "Sunday";
+	    break;
+	}
+	// Outputs "Thursday" (day 4)
+	```
+
+- the `break` and `default` keywords are optional
+	- `break` keyword breaks out of the switch block. This will stop the execution of more code and case testing inside the block. Best practice is to include them.
+		- when a match is found, there is no need for more testing
+		- a break can save a lot of execution time because it "ignores" the execution of all the rest of the code in the switch block
+	- `default` keyword specifies some code to run if there is no case match
+		- `break` statement is not needed in the default case
+
+		```
+		int day = 4;
+		switch (day) {
+		  case 6:
+		    cout << "Today is Saturday";
+		    break;
+		  case 7:
+		    cout << "Today is Sunday";
+		    break;
+		  default:
+		    cout << "Looking forward to the Weekend";
+		}
+	// Outputs "Looking forward to the Weekend"
+		```
+
+If declaring a variable within the case statment, then you need to have the code for that statement within `{ }` 
+[Link](https://www.w3schools.com/cpp/cpp_switch.asp) with more information on C++ switch statements'
+
+
+```
+switch (selection) {
+	case '1': cout << "1 selected";
+				break;
+	case '2': cout << "2 selected";
+			break;
+	case '3': 
+	case '4':
+		cout << "3 or 4 selected";
+		break;
+	default:	cout << "1, 2, 3, 4 NOT selected";
+```
+
+Notice how in the above example, the `cout` statement in `case 4` also applies to `case 3`. It functions as an OR statement.
+
+
+### Conditional Operator (`?`)
+
+```
+(cond_expr) ? expr1 : expr2
+```
+
+- `cond_expr` evaluates to a boolean expression
+	- if `cond_expr` is true then the value of `expr1` is returned
+	- if `cond_expr` is false then the value of `expr2` is returned
+-  This is very similar to an `if-else` construct
+-  Ternary operator
+-  Very useful when used inline
+	- can make code a lot cleaner   
+-  Easily abused - never nest
+
+[Useful Link](https://www.w3schools.com/cpp/cpp_conditions_shorthand.asp) helping explain the conditional operator.
+
+Exmaple: Use to avoid a divide by 0 error
+	```
+	int result = (b != 0) ? (a/b) : 0;
+	```
+
+Example: Display the larger of two numbers
+
+	```
+	int num1{}, num2{}
+	cout << "Enter two integers separated by a space: ";
+	cin >> num1 >> num2;
+	
+	if (num1 != num2){
+		cout << "Largest: " << ((num1 > num2) ? num1: num2) << endl;
+	}
+	else {
+		cout << "The numbers are the same"
+	} 
+	```
+
+
+### For Loops
+
+Used for iterating a specific number of times
+
+```
+for (initialization; condition; increment) {
+  // code block to be executed
+}
+```
+
+- `initialization` is executed (one time) before the exection of the code block
+- `condition` defines the condition for executing the code block. This conditional statement is checked every time and must evaluate to `true` for code in the loop to be executed.
+- `increment` is executed (every time) after the code block has been executed
+- All of these expressions are technically optional
+
+Example: print the numbers 0 to 4
+	```
+	for (int i = 0; i < 5; i++) {
+	  cout << i << "\n";
+	}
+	```
+
+- `int i = 0;` initializes a variable `i` with a value `0`. This happens only once before executing the `for` loop
+	- it is common to use `i` as the increment value 
+	- if you initialize the increment variable in the for loop then it only exists in the loop
+- `i < 5;` check to make sure that `i` is less than `5`.
+- `i++`; increment `i` by one every time you finish the code block
+	- in this case `i++` and `++i` are the same because the statement is on its own
+
+	
+Comma operator (`,`): allows you to separate expressions with a `,` and all the expressions will execute
+
+- not commonly used in C++ but sometimes used to initialize variables
+- associativity is right to left
+- result of the comma operator is the leftmost expression
+
+```
+for (int i {1}, j{5} ; i <= 5; i+=2, j++){
+//code goes here
+}
+```
+
+#### Looping over an vecor:
+
+One way to do it
+
+```
+vector<int> nums {1, 2, 3, 4, 5};
+
+for (unsigned i {0}; i < nums.size(); i++){
+	// code goes here
+}
+```
+
+#### Range-based for loop / for-each loop
+
+Want to be able to iterate over the entirety collection of elements without having to worry about the sequence length, incrementing/decrementing variables, or subscripting indices.
+
+- this works for arrays, vectors, and strings
+
+**Syntax:**
+
+```
+for (type variable_name : sequence_name){
+	// code goes here
+}
+```
+
+Example:
+
+	```
+	int myNumbers[5] = {10, 20, 30, 40, 50};
+	for (int i : myNumbers) {
+	  cout << i << "\n";
+	}
+	```
+
+Don't always have to give the type of the variable corresponding to the elements of the array. You can use the `auto` keyword and the compiler will figure it out.
+
+```
+int scores [] {100, 90, 97};
+
+for (auto i : scores){
+	cout << i << endl;
+}
+
+```
+
+The range-based for loop is equivalent to the `for variable in sequence:` for loop syntax in python.
+
+### While Loop
+
+```
+while (condition){
+	// code block to be executed
+}
+```
+
+While loops continue as long as the condition evaluates to true. The condition is evaluated at the beginning of each iteration of the loop.
+
+`while` loops can be constructed to have the same format as a `for` loop, but it is generally better to use a `for` loop than a `while` loop when possible. --> Use the `for` loop when we know how many times we need to loop and use the `while` loop when you don't
+
+`while` loops are often used to do input validation (using a boolean flag).
+
+example:
+
+```
+bool done {false};
+int number {0};
+
+while (!done){
+	cout << "Enter an integer between 1 and 5: ";
+	cin >> number;
+	
+	// if the integer is not between 1 and 5, prompt the user again
+	if (number <= 1 || number >= 5){
+		cout << Out of range, try again." << endl;
+		}
+	
+	// if the integer is between 1 and 5, thank the user and then change the boolean flag to true, breaking out of the while loop
+	else {
+		cout << "Thanks!" << endl;
+		done = true;
+	}
+}
+```
+
+### Do While Loop
+
+```
+do {
+  // code block to be executed
+}
+while (condition);
+```
+
+The condition is checked at the end of each statment, this guarantees the code block is executed at least once before checking if the condition is true.
+
+Can be used for input validation:
+
+```
+int number {};
+do {
+	cout << "Enter an integer between 1 and 5 (not inclusive): ";
+	cin >> number;
+	cout << endl;
+} while (number <= 1 || number >= 5);
+
+cout << "Thanks" << endl;
+```
+
+Often used in menu based programs. Those can also use `switch` statements too.
+
+
+### Continue and Break
+
+`continue` 
+
+- no further statements in the body of the loop are executed
+- control immediately goes directly to the beginning of the loop for the next statement
+
+`break`
+
+- no further statements in the body of the loop are executed
+- loop is immediatley terminated
+- control immediatley goes to the statement following the loop construct
+
+
+### Infinite Loops
+- Control statement whose condition always evaluate to true
+- Often accidental, but sometimes done intentionally
+	- Intentional infinite loops are often used with break statements to exit out when a certain condition is met
+		- be careful with this. It's often just to structure your loop and your condition to not require this.
+
+Example: Loop through a block of code until the user no longer wants to continue.
+
+```
+while (true){
+	// main body of code goes here
+	
+	// check to see if you want to loop again
+	char again {};
+	cout << "Do you want to loop again? (Y/N): ";
+	cin >> again;
+	
+	// check input from user
+	while (!(again == 'Y' || again == 'y' || again == 'N' || again == 'n')){
+	cout << "Error: Incorrect Value" << endl;
+	cout << "Please enter either ('Y' or 'N'): ";
+	cin >> again;
+	}
+	
+	if (again == 'N' || again == 'n'){
+		break;
+	}
+}
+```
+
+You could rewrite this code as:
+
+```
+char again {Y};
+
+while (again == 'Y' || again == 'y'){
+
+	// main body of code goes here
+	
+	// check to see if you want to loop again
+	cout << "Do you want to loop again? (Y/N): ";
+	cin >> again;
+	
+	// check input from user
+	while (!(again == 'Y' || again == 'y' || again == 'N' || again == 'n')){
+	cout << "Error: Incorrect Value" << endl;
+	cout << "Please enter either ('Y' or 'N'): ";
+	cin >> again;
+	}
+	
+}
+```
+
 ## Markdown Help
  
  [link](www.google.com)
