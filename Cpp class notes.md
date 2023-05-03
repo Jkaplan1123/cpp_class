@@ -1086,6 +1086,237 @@ while (again == 'Y' || again == 'y'){
 }
 ```
 
+## Section 10 - Characters and Strings
+
+- Characters are values that map to character sets
+- Strings are sequences of characters
+	- There are C-style strings and C++ - style strings
+
+
+
+### Character Functions
+
+`cctype` library contains useful functions for testing characters and for converting character case
+
+Syntax: `function_name(char)` - functions take in a single character
+
+ - [list](https://cplusplus.com/reference/cctype/) of `cctype` character functions
+
+### C-Style Strings
+
+- sequence of characters stored contiguously in memory
+- implemented as nrray of charcters terminated with null character
+	- referred to as zero or null termianted strings
+	- you can use array notation to access specific characters
+	- C-style strings are fixed lenth
+- string literal - sequence of characters in double quotes (e.g. `"Jack"`)
+	- you can use 
+	- null characters compares equal to zero
+
+#### Declaring variables
+
+```
+char my_name [] {"Jack"}; // stored as an array with elements [J a c k \0]
+
+my_name[2]; // returns a
+
+my_name[4] = y; // this causes a problem because you replace the /0 with a y and the string is no longer null terminated
+
+```
+
+```
+char my_name[7] {"Jack"}; // stored as an array with elements [J a c k \0 \0 \0]
+
+my_name[4] = y; // no problem with this because the string still is null terminated
+```
+
+You cannot initialize a C-style string by assigning it to a literal. To assign one string to another, you need to use `strcpy(string_name, literal)
+
+```
+char my_name [8];
+
+cout << my_name; // Will likely get garbage
+
+my_name = "Jack" // Error
+strcp(my_name, "Jack"); // OK
+```
+
+`<cstring>` library contains functions that work wtih C-style Strings. 
+
+- requries that each string be terminated with a null character
+- these functions include functions tat cop, concatenate, etc
+- [list] (https://cplusplus.com/reference/cstring/) of functions in `<cstring>` library
+
+`<cstdlib>` contains functions that converts strings to other types
+
+
+Best practice is to always initialize a string: `char string_name[n] {};` where $n$ is an integer. If you initialize a then you can assign it a value.
+
+```
+char my_name[10] {};
+
+my_name = "Jack"; //OK
+
+//my_name is now an array consisting of [J a c k /0 /0 /0 /0 /0 /0]
+
+cout << my_name // displays Jack
+```
+
+`strlen(string)` returns something of a type `size_t`. `size_t` is a data type usedto represent teh size of an object.
+
+Your strings need to be null-terminated or else you will run into problems
+
+#### Other Notes
+`cin` only takes in information before a space. If you want to be able to have a space in your input, you need to use `cin.getline(string_name,max_characters_to_read)`
+
+```
+char full_name [50] {};
+
+cout << "Enter your first and last name: "
+```
+
+Let the user input be: Jack Kaplan
+
+```
+cin >> full_name
+cout << full_name // prints "Jack"
+```
+
+```
+cin.getline(full_name, 50)
+cout << full_name // prints Jack Kaplan
+```
+
+### C++ Strings
+
+Whenever possible, is better to use C++ strings than to use C-style strings
+
+- `string` is a Class in the standard template libarary (STL)
+	- need to use `#include <string>`
+	- in the std namespace 
+	- contiguous in memory
+	- dynamic size
+	- work with input and output streams
+	- lots of useful functions
+	- our familiar operators can be used (`+`, `=`, ... )
+	- Can be easily converted to C-style strings if needed
+	- safer
+- strings are objects
+	
+[Webpage with C++ String Information] (https://www.w3schools.com/cpp/cpp_strings.asp)
+
+#### Initializing
+
+Assume that all code begins with the following preprocessor terms 
+
+```
+#include <string>
+using namespace std;
+```
+
+```
+string s1; // Empty - Not Garbage!
+string s2 {"Jack"} // Jack
+string s3 {s2} // Jack (copy of s2)
+string s4 {"Jack", 3}; // Jac
+string s5 {s3, 0, 2}; // Ja - The numbers refer to the starting index and the length, respectively
+string s6 {s3, 1, 2}; // ac
+string s7 (3, 'X'); // XXX
+```
+
+#### Assignment
+
+Can use assignment operators (unlike with C-style strings). Don't have to use 
+
+```
+string s1;
+s1 = "C++ Rocks!"; 
+cout << s1; //C++ Rocks
+
+string s2 {"Hello"}; 
+cout s2; //Hello
+s2 = s1; //Assigns acopy of s1 to s2
+cout << s2; // C++ Rocks
+```
+
+#### Concatenation
+
+- Can use `+` or the `append()` method to concatenate strings
+- can only concatenate C++ style strings, cannot concatenate two (or more) C-style literals
+
+```
+string part1 {C++};
+string part2 {"is a powerful"};
+
+string sentence;
+
+sentence = part1 + " " + part2 + " language";
+// C++ is a powerful language
+
+sentence = "C++ " + " is powerful"; //Illegal, cannot concatenate C-style literals
+```
+
+- compound assignment operator (`+=`)
+
+#### Accessing Characters
+
+- can use array index syntax `[]` or `at()` method
+- `at` method provides bounds checking, array-style syntax does not
+- `substr()` extracts a substring from a larger string
+- `find()` method - returns the index of a substring in a string
+- `erase()` method - removes a substring of characters from a string
+- `clear()` method empties a string
+- `length()` method returns the number of characters in the string object
+
+#### Comparing Strings
+
+- don't forget that `char` types are representations of integers from an ascii (or other) source
+- use the normal comparator operators (`==`, `>`, `<`, etc.)
+- objects are comperd character by character lexically
+	- `A` < `Z` and `A` < `a` because of their ascii representation
+	- compares character by character
+
+``` 
+string s1 {Apple};
+string s2 {Banana};
+string s3 {apple};
+
+s1 < s2; \\ returns true because A comes before B in the ascii table
+
+s2 < s3; \\ returns true because B comes before a in the ascii table
+
+s1 == s3 \\ returns false becase "Apple" is not the same as "apple"
+
+
+```
+
+- Can compare
+	- two C++ string objects
+	- a C++ string and a C-style string literal
+	- a C++ string and a C-style string variable  
+
+#### Input
+
+Like with C-style strings, C++ strings only accept up to the first space when using `cin`. 
+
+The `getline()` function reads the entire line until the `\n`. `getline()` expects two parameters. 
+
+- the first is the input stream. In this case it is `cin`
+- the second is the variable that it is assigning the input to
+- a third (optional) parameter is called the delimiter. It is the character at which `getline()` stops reading input. It defaults to `\n` but it could also be manually chosen. It will not save this character to the string variable. 
+
+```
+string s1;
+cin >> s1; // User input "Hello There"
+cout << s1 << endl; // Prints: Hello
+
+getline (cin, s1); // reads the entire line up unitl \n
+cout << s1 << endl; // Prints: Hello There
+
+getline (cin, s1, 'x'); // User input: This isx
+cout << s1 << endl; // Prints: This is
+```
+
 ## Markdown Help
  
  [link](www.google.com)
