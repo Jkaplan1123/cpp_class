@@ -1317,6 +1317,672 @@ getline (cin, s1, 'x'); // User input: This isx
 cout << s1 << endl; // Prints: This is
 ```
 
+
+## Functions
+
+### Overview
+
+- Boss/Worker analogy
+- To use a function, you need to understand:
+	- What the it does
+	- What information it needs
+	- What it returns
+	- What errors it may produce
+	- What performance constraints it may have 
+- You do not need to worry about how the function works internally unless you are the one creating a function
+
+
+- `<cmath>` - mathematics library ([link](https://cplusplus.com/reference/cmath/))
+- [Overview of Functions](https://www.w3schools.com/cpp/cpp_functions.asp)
+
+### Function Definition
+
+
+#### Parts of a Function
+- name - the name of the function
+	- same naming convention rule as variables
+	- make name meaningful/descriptive
+	- usually a verb or verb phrase 
+- parameter list - variables passed into the function
+	- their type must be specified
+- return type - the type of data that is returned from the function
+- body - the statements that are executed with the function is called
+
+#### Syntax:
+
+
+```
+return_type func_name(parameter_type parameter){
+
+	//body goes here
+
+}
+
+```
+
+- This is called the function header
+- `return_type` is the data structure type that the function returns
+	- for functions that don't return anything, the `return_type` is `void`. 
+- `func_name` is the function name
+- `parameter_type` is the data type that `parameter` will be. 
+	- There can be (functionally) infinitely many parameters. Each `type` `parameter` pair will be separated by commas.
+	- If a function does not have any parameters, there will be nothing in the `()`
+	- `void myFunction()`
+	- Functions that do not return anything can still have a return statement but do not have to
+
+	```
+	void myFunction(){
+		// body of function
+		
+		return; //optional
+		
+		}
+	```
+
+
+The compiler must know the function details before it is called. There are two ways to accomplish this.
+
+- Have a function prototype above `main` that contains everything except the body of the code.
+
+example:
+
+```
+void my_func();
+
+int main(){
+	my_func();
+	return 0;
+}
+
+void my_func(){
+	cout << "Hello World!" << endl;
+}
+```
+
+- Write the function above the function that calls it.
+
+
+### Prototypes
+
+- Tells the compiler what it needs to know without a full function definition
+- Placed in the beginning of the program
+- Also used in our own header (.h) files - for when we split up 
+- the prototype has to provide the complier with:
+	- the function name
+	- the function return type
+	- the parameter type(s) - It can provide the name of the parameter itself but this is optional
+	- `int funcion_name(int);` and `int function_name(int alpha);` are both valid prototypes of a function that takes in a single integer `alpha` and returns an integer.
+	- best practice, however, is to provide the parameter name for documentation purposes
+- When you call the function, you must match the prototype
+
+### Parameters
+
+- when we call a function we can pass in data to that function
+	- when you call the function they are called **arguments**
+	- in the function definition they are called **parameters**
+	- the arguments and parameters must match in number, order, and type
+		- the function will try to convert types to make the function call work (e.g. if you pass an `int` to a function that expects a `double`-type argument, the program will convert an `int` to a `double`)
+			- `char` values may be converted to `int` type corresponding to ASCII value 
+
+#### Pass by Value
+
+- the value of the data is passed in by `copy` - the complier makes a copy of the data
+	- whatever changes you make to the parameter in the function does not affect the argument that was passed in
+	- making a copy can be expensive
+
+- Formal vs. Actual Parameters
+	- formal parameters - the parameters defined in the function header
+	-  actual parameters - the parameters used in the function call, the arguments
+	-  The actual parameters are "passed by value" or copied to the formal parameters
+
+```
+int main(){
+	int actual {50};
+	cout << actual << endl; // 50
+	param_test(actual); // pass in 50 to param_test
+	cout << actual << endl; // 50 - did not change
+	return 0
+}
+
+void param_test (int formal){ // formal is a copy of actual
+
+	cout << formal << endl; // 50
+	formal = 100; // only changes the local copy
+	cout << formal << endl; // 100
+	
+}
+
+```
+
+#### Default Argument Values
+
+- When a function is called, all arguments must be supplied
+- Sometimes some of the arguments have the same values most of the time - we can tell the compiler to use default values if the arguments are not supplied.
+- Default values can be in the prototype or definition, not both
+	- best practice is to declare them in the prototype
+	- must appear at the tail end of the parameter list (after the parameters without default values)
+	- a function can take in multiple arguments with default values. They must appear consecutivley at the tail end of the parameter list 
+- functions with default arguments can be overloaded, but be careful
+
+##### Single Default value
+```
+double calc_cost (double base_cost, double tax_rate = 0.06); // Prototype assigns a default value to tax_rate of 0.06
+
+double calc_cost (double base_cost, double tax_rate){ //function header does not include default value because it is already included in the prototype
+
+	return base_cost += base_cost * tax_rate;
+	
+}
+
+int main() {
+	double cost {0};
+	cost = calc_cost(100); // will use default for tax_rate
+	cost = calc_cost(100, 0.08); // will use 0.08 for tax rate
+}
+```
+
+##### Multiple Default Arguments
+
+```
+double calc_cost(double base_cost = 100.0, double tax_rate = 0.06, double shipping = 3.50) //default values set in prototype
+
+double calc_cost (double base_cost, double tax_rate){ //function header does not include default value because it is already included in the prototype
+
+	return base_cost += base_cost * tax_rate;
+	
+}
+
+int main() {
+	double cost {0};
+	cost = calc_cost(); // uses default values for both 
+	cost = calc_cost(125); // will use 125 for base_cost and default for tax_rate
+	cost = calc_cost(100, 0.08); // will use 100 for base_cost and 0.08 for tax rate. No defaults
+}
+
+```
+
+Unlike python, there is no way use the default value for any argument to the left of the rightmost argument that has been defined. E.g. in the above example you could not use the default value of `base_cost` but input a new value for `tax_rate`. Therefore, if more than one default argument exists, the leftmost default argument should be the one most likely to be explicitly set by the user.
+
+### Return Statment
+
+- if a function returns a value then it must use a `return` statement that returns a value of the same type in the function header
+	- if a function does not return a value (`void`) then the `return` statement is optional
+- `return` statement can occur anywhere in the body of the function
+- 	`return` statement immediately exits the function
+-  We can have multiple `return` statements in a function - often the result of conditional logic
+	- be careful with this  
+-  the return value is the result of the function call 
+	- 	`value = my_func(parameter);`  
+
+### Overloading Functions
+
+- Functions with different parameter lists that have the same name - good use of abstraction
+- A type of polymorphism - have the same name work with different data types to execute similar behavior
+	- ex: if you want to be able to print a variable regardless of if it is an `int`, `double`, `string`, etc.
+- The complier must be able to tell the functions apart based on the parameter lists and arguments supplied
+- You need to implement each function (we will talk about function templates later)
+- Be careful when using with default arguments. Only have one of the functions (maximum) with a default
+
+Example:
+```
+int plusFuncInt(int x, int y) {
+  return x + y;
+}
+
+double plusFuncDouble(double x, double y) {
+  return x + y;
+}
+
+int main() {
+  int myNum1 = plusFuncInt(8, 5);
+  double myNum2 = plusFuncDouble(4.3, 6.26);
+  cout << "Int: " << myNum1 << "\n";
+  cout << "Double: " << myNum2;
+  return 0;
+}
+```
+
+- The `return` type is not considered when the compiler is deciding which function to call.
+	- the compiler can only tell between the different implementations based on the arguments 
+
+
+```
+int get_value();
+double get_value();
+
+cout << get_value() << endl; //Error: the compiler doesn't know which version to call
+```
+
+### Passing Arrays
+
+- we can pass an array to a function by providing square brackets in the formal parameter description 
+	- `void print_array (int numbers []);`
+- Array elements are **NOT** copied
+			  
+	- since the array name evaluates to the location of the array in memory, this address is what is copied
+		- The function has no idea how many elements are in the array since all it knows it the location of the first element (the name of the array)
+
+	```
+	void print_array(int numbers []);
+	
+	int main () {
+		int my_numbers[] {1,2,3,4,5};
+		print_array(my_numbers);
+		
+		return 0
+	}
+	
+	void print_array(int numbers[]){
+		//The compiler doesn't know know many numbers are in the array
+		// we need to pass in the size
+	}
+	```  
+	- to fix this, we need to pass in a size parameter
+
+	```
+	void print_array(int numbers [], size_t size);
+	
+	int main () {
+		int my_numbers[] {1,2,3,4,5};
+		print_array(my_numbers, 5);
+		
+		return 0
+	}
+	
+	void print_array(int numbers[], size_t size){
+		for size_t i = 0; i < size; i++){
+			cout << numbers[i] << endl;
+		}
+	}
+	```  
+
+	- since we are passing the location of the array, the function can modify the actual array
+		- this can be useful, but we need to be careful
+		- to avoid accidentally changing the array, you can  define the parameter to be `const`
+
+	```
+	void print_array (const int numbers [], size_t size){
+		for (size_t i{0}; i < size; i++){
+		cout << numbers[i] << endl;
+		
+		numbers[i] = 0; // any attempt to modify the array will result in a compiler error
+		}
+	}
+	```
+
+### Pass by Reference
+
+- default when passing a function is pass by value - the function receives a copy of the passed argument's value
+- Sometimes we want to be able to change the actual parameter from within the function body - to do this we need the address of the actual parameter
+	- this is what happened when we passed arrays because the array's value is the location of the first element in the array
+- We can use reference parameters (`&param_name`) to pass in a reference to the actual parameter
+- The formal parameter will not be an alias for the actual parameter
+
+syntax:
+
+```
+type my_func (type &parameter);
+
+
+type my_func(type &parameter){
+	// body goes here
+}
+
+```
+
+
+Adding a `&` in front of the parameter name in the prototype and function heading passes the parameter reference rather than a copy of the parameter's value. You continue to use the regular parameter name in the function body. For example:
+
+```
+void scale_number (int &num); //prototype
+
+int main() {
+	int number {1000};
+	cout << number << endl; // 1000
+	scale_number(number); // call scale_number
+	cout << number << endl; // 10
+	return 0;
+}
+
+void scale_number (int &num){ //definition
+	num = 10;
+}
+```
+
+#### Vector Example 
+
+##### Pass by Value
+
+```
+void print(vector<int> v);
+
+int main(){
+	vector<int> data {1,2,3,4,5};
+	print(data); // 1 2 3 4 5
+	return 0;
+}
+
+void print (vector<int> v){
+	for (auto num: v){
+		cout << num << endl;
+	}
+}
+```
+
+Notice that in the above pass by value example you don't need to pass the size information becaue that is contained in the vector object. Because it makes a copy, this code has much more overhead than passing the vector by reference.
+ 
+##### Pass by Reference
+
+```
+void print(vector<int> &v);
+
+int main(){
+	vector<int> data {1,2,3,4,5};
+	print(data); // 1 2 3 4 5
+	return 0;
+}
+
+void print (vector<int> &v){
+	for (auto num: v){
+		cout << num << endl;
+	}
+}
+``` 
+
+Other than adding the `&`, the code for the passing a vector by reference is the exact same as the code for passing a vector by value. To protect against accidentally changing the vector in the pass by reference example, you could always make the vector a constant. 
+
+```
+void print(const vector<int> &v);
+
+int main(){
+	vector<int> data {1,2,3,4,5};
+	print(data); // 1 2 3 4 5
+	return 0;
+}
+
+void print (const vector<int> &v){
+	for (auto num: v){
+		cout << num << endl;
+	}
+}
+``` 
+
+### Scope Rules
+
+- scope rules determine wehre an identifier can be used
+- C++ uses static or lexical scoping - scope is determined the way that you read a program
+
+Upshot: when looking for a value, look within the local block. If you don't find it, look one block more global. Continue looking more globally, one nested block at a time, until you either find the variable you are looking for or you have a compiler error. 
+
+- The most local variable possible is used first. If you have a local variable and a global variable with the same name, then your program will use the local variable.
+
+#### Blocks
+[block](https://www.learncpp.com/cpp-tutorial/compound-statements-blocks/) (also called compound statements) is a group of *zero or more statements* that are treated by the complier as if it were as single statement
+
+- blocks begin with `{` and end with a `}` with the statements to be exectued placed inbetween
+- blocks are often used to deliminate functions or loops, but they can be used wherever a single statement is allowed.
+- No semicolon is needed at the end of the block
+
+
+#### **Local Scope**
+
+identifiers declared in a block (`{}`) 
+
+- function parameters have block scope - only visible in the block (`{}`) where declared
+	- this also occurs in loops - variables that are declared inside a loop denoted by `{}` are destroyed upon exiting that loop
+- Functionl local variables are only active when the function is executing
+- Local variables are not preserved between function calls
+- With nested blocks, inner blocks can "see" identifiers declared in outer blocks but outer blocks cannot "see" values declared in inner blocks.
+
+```
+int main(){
+
+	int num {100}; //local to main
+	int num1 {500}; // local to main
+	
+	cout "Local num is: " << num << " in main" << endl; // 100
+	
+	{ // create a new level of scope		
+		int num{200}; // declare a num that is local to this block
+		cout << "local num is: " << num << " in inner block in main" << endl; // 200
+		cout << "Inner block in main can see out - num1 is: " << num1 << endl; // 500 - local block can see out
+	}
+
+	cout "Local num is: " << num << " in main" << endl; // 100, 
+	// num variable declared in inner block is destroyed and we revert to initial declartion
+
+}
+```
+
+##### **Static local variables**: variable whose lifetime is the lifetime of the program but it is only visible to the statements in the function body
+- declared with `static` qualifier 
+	- e.g. `static it value {10};`
+- Value is preserved between function calls
+- Only initialized the first time the function is called
+- useful when you need to know the value of a previous function call
+
+```
+void test()
+{
+    // var is a static variable
+    static int var = 0;
+    ++var;
+
+    cout << var << endl;
+}
+
+int main()
+{
+    
+    test(); // outputs 1
+    test(); // outputs 2
+
+    return 0;
+}
+
+```
+
+#### Global Scope
+
+- identifier declared outside of any function or class
+- visible to all parts of the program after the global identifier has been delcared
+- Global constants are OK
+- Best practices is not to use global variables ([explanation - why global variables are evil](https://www.learncpp.com/cpp-tutorial/why-non-const-global-variables-are-evil/)]
+
+
+### How Function Calls Work
+
+- Function use the *function call stack*
+	- stack is analogous to a stack of books
+	- LIFO - last in first out
+		- push - adds an item to the top of the stack
+		- pop - removes an item from the top of the stack
+- Stack Frame or Activation Record
+	- each time a function is called, you create a new activation record  and push it to the top of the call stack
+	- each time a function terminates we pop the activate record and return
+	- Local variables and function parameters are allocated on the stack
+	- You cannot jump to the middle of the stack, you must follow the LIFO stack rules.
+- Stack size is finite - you can run out of stack space (Stack Overflow error)
+
+```
+// Section 11.11 - Lecture 111
+// How function calls work
+// The call stack
+#include <iostream>
+
+using namespace std;
+
+int func1(int a, int b) {
+    int result {};
+    result = a + b;
+    return result;
+}
+
+int main() {
+    int x {10};
+    int y{20};
+    int z{};
+    z = func1(x,y);
+    cout << z << endl;
+    return 0;
+}
+
+/* What typically happens when main calls func1 (or any function calls another) ?
+    There are other ways to acheive the same results :)
+    
+    main:
+        push space for the return value
+        push space for the parameters
+        push the return address
+        transfer control to func1 (jmp)
+    func1:
+        push the address of the previous activation record
+        push any register values that will need to be restored before returning to the caller
+        perform the code in func1
+        restore the register values
+        restore the previous activation record (move the stack pointer)
+        store any function result
+        transfer control to the return address (jmp)
+    main:
+        pop the parameters
+        pop the return value
+*/
+
+
+```
+
+#### References
+
+- [Memory Layout of a C Program](https://www.geeksforgeeks.org/memory-layout-of-c-program/) (inclues C/C++)
+- [Stack vs Heap Memory Allocation](https://www.geeksforgeeks.org/stack-vs-heap-memory-allocation/)
+
+### Inline Functions
+
+- Function calls have a certain amount of overhead - see call stack
+- Sometimes we have simple functions 
+- We can **suggest** to the complier to compile them *inline* using the `inline` keyword
+	- avoids function call overhead
+	- generates inline assembly code
+	- faster
+	- could cause bloat if you call the function many times
+- Compliers optimizations are very sophisticated - will likely compile inline even without your suggestion 
+- Inline functions are typically included in header (.h) files so the function definition is available to all points that need it.
+
+
+```
+inline int add_numbers(int a, int b){ // definitino
+	return a+b;
+}
+
+int main(){
+	int result {0};
+	result = add_numbers(100, 200); // call function
+	return 0;
+}
+
+```
+ 
+### Recursive Functions
+
+A recursive function is a function that calls itself 
+
+- can be direcly or indirectly through another function
+- definition of recursion is something that is defined in terms of itself
+
+
+some types of problems are well suited to recursive work.
+
+- mathematical functions such as factorials, fractials, etc.
+- searching and sorting algorithms
+
+Recursive problem solving:
+
+- base case
+	- the base case is super important because it stops the recursion 
+- divide the rest of the problem into a subproblem and do a recursive call 
+
+
+Factorial Example: 
+
+Factorials are defined in terms of itself - definition of recurision
+
+$
+\begin{equation}
+x! = \begin{cases} 
+	1 & \text{if } x = 0 \\
+	x * (x-1)! & \text{if } x > 0 
+\end{cases}
+\end{equation}
+$
+
+
+- Base Case: `factorial(0) = 1` 
+- Recursive Case: `factorial(n) = n * factorial (n-1)`
+
+```
+unsigned long long factorial (unsigned long long n){
+	
+	if (n == 0){
+		return 1; // base case
+	}
+	
+	else{
+		return n * factorial(n-1) // recursive case
+	}
+}
+
+int main(){
+	cout << factorial (8) << endl; // 40320
+	
+	return 0;
+}
+
+```
+
+Fibonacci Example: 
+
+$
+\begin{equation}
+F(x) = \begin{cases} 
+	0 & \text{if } x = 0 \\
+	1  & \text{if } x = 1 \\
+	F(x-1) + F(x-2) & \text{if } x >= 2
+\end{cases}
+\end{equation}
+$
+
+- Base Cases:
+	- `Fib(0) = 0`
+	- `Fib(1) = 1` 
+- Recursive Case: `Fib(n) = Fib(n-1) + Fib(n-2)`
+
+```
+unsigned long long fibonacci (unsigned long long n){
+	
+	if (n <= 1){
+		return n; // covers both n = 0 and n = 1
+	}
+	
+	else{
+		return fibonacci(n -1) + fibonacci(n-2) // recursive case
+	}
+}
+
+int main(){
+	cout << fibonacci (30) << endl; // 832040
+	
+	return 0;
+}
+
+```
+
+#### Important Notes
+
+- Recursion is a form of iteration. Anything that can be done through recursion can be done thorough another form of iteration
+	- don't forget about stack overflow 
+- Only use recursion when it makes sense - it is resource intensive
+- Rember the base case(s) - it terminates the recursion
+
 ## Markdown Help
  
  [link](www.google.com)
