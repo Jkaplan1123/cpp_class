@@ -804,7 +804,7 @@ switch(control_expression) {
 		  default:
 		    cout << "Looking forward to the Weekend";
 		}
-	// Outputs "Looking forward to the Weekend"
+		// Outputs "Looking forward to the Weekend"
 		```
 
 If declaring a variable within the case statment, then you need to have the code for that statement within `{ }` 
