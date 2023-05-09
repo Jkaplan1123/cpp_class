@@ -129,6 +129,7 @@ cout << *int_ptr << endl; / 100
 ```
 
 - Allocated storage is on the heap. It contains garbage data until you initialize it.
+	- heap memory is not deleted after the function call (I think) 
 - The allocated storage does not have a name. The only way to get to it is via the pointer.
 	- Memory leak: occurs when you lose that pointer
 - You need to deallocate the storage when you are done with it. Use the `delete` keyword followed by the name of the pointer.
@@ -265,7 +266,7 @@ C++ allows a subset of the arrithmetic operators to work with pointer variables 
 	 
 	int *ptrz {ptrx};
 	cout << (z == ptrx) << endl; // true
-	 ```
+	```
 	 
 ##### Regarding precedence
 
@@ -357,12 +358,315 @@ We can use pointers and the deference operator to achieve pass-by-reference
 - the actual parameter can be a pointer or address of a variable
 
 
+##### Example
+
 ```
+
+// Defining the Function
+
 void double_data(int *int_ptr); //prototype
 
 void double_data(int int_ptr){
-	*int_ptr *= 2;
+	*int_ptr *= 2; // The * here both functions as the dereference operator and the multiplication operator
+}
+
+// Calling the Function
+
+int main(){
+	int value {10};
+	cout << value << endl; // 10
+	
+	// The function parameter is a pointer to an interger, so it expects an address of an ineger.
+	
+	double_data(&value); //pass double_data the address of value
+	
+	cout << value << endl; // 20
+	
+	int *int_ptr{&value}; // create a pointer to value
+	double_data(int_ptr); // you can also pass a pointer
+	
+	cout << value << endl; // 40
 }
 ```
 
+#### Returning a Pointer from a Function
+
+Functions can return pointers: `type *function();`
+
+- `type` is the type of the pointer
+- notice the `*` operator before the function name
+- needs to have this format both in the prototype and in the function definition.
+
+Should return pointers to:
+
+- memory dynamically allocated in the function
+- To data that was passed in
+
+Never return a pointer to a local variable
+
+Example: take in pointers to two integers, return the pointer to the largest integer. This returns a pointer to data that was passed in.
+
+```
+int *largest_int(int *int_ptr1, int *int_ptr2); // prototype
+
+int main(){
+	int a {100};
+	int b {200};
+	
+	int *largest_ptr {nullptr};
+	largest_ptr = largest_int(&a, &b); // call the function that returns a pointer
+	
+	cout << *largest_ptr << endl; // 200
+	return 0;	
+}
+
+
+// function declaration
+int *largest_int(int *int_ptr1, int *int_ptr2){
+	if (*int_ptr1 > *int_ptr2){
+		return int_ptr1;
+	}
+	
+	else{
+		return int_ptr2;
+	}
+}
+```
+
+Example: returnning dynamically allocated memory
+
+the funtion in the example below creates an array of length `size` and initializes the values to `init_value`. It then returns the pointer `new_storage` which points to the newly created array.
+
+```
+int *create_array(size_t size, int init_value = 0)}
+	int *new_storage{nullptr};
+	
+	new_storage = new int[size]; // dynamically create the array
+	
+	for (size_t i{0}; i < size; i++){
+		*(new_storage + i) = init_value;
+	}
+	
+	return new_storage; // return the pointer to the newly created array
+}
+
+```
+
+Calling the function:
+
+```
+int main(){
+	int *my_array {nullptr}; // this will be allocated by the function
+	
+	my_array = create_array(100, 200); //create the array
+	
+	... // use the array somehow
+	
+	delete [] my-array; //free the storage
+	
+	return 0;
+}
+```
+
+##### Things to not do
+
+If you return a pointer to a local variable in a function it can cause problems because the local variable is deleted when that stage in the activation stack is deleted.
+
+#### Potential Pointer Pitfalls
+
+- unitialized pointers - contain garbage. could be pointing anywhere
+	- be sure to initialize pointers using `nullptr` if not immediately assigning to an address
+- dangling pointers - pointers that point to memory that is no longer valid. You don't know what the reults will be. 
+	- pointer that is pointing to released memory
+		- For example: 2 pointers point to the same data. One pointer releases the data with `delete`. The other pointer accesses the released data.
+	- Pointer that points to memory that is invalid
+		- For example: when a fucntion returns a pointer to a function local variable.    
+- not checking if `new` failed to allocate memory
+	- If `new` failes an `exception` is thrown. We can use exception handling to catch these.
+	- dereferencing a null pointer causes your pointer to crash 
+- leaking memory - one of the most common pointer problems
+	- forgetting to release allocated memory with delete
+	- If you lose your pointer to the storage allocated on the heap, you do not have a way to get to that storage again
+	- The memory is orphaned or leaked 
+
 ### References
+
+A reference is an alias for a variable. Whenever you are using a reference, you are actually using the variable it refers to.
+
+- References must be initialized to a variable when declared.
+	- they can never be null
+	- once initialized, references cannot be made to refer to a different variable
+- References are very useful as function parameters
+- May be helpful to think of a reference as a constant pointer that is automatically dereferenced
+
+
+#### Syntax
+
+```
+type var {value}; // create a variable var of
+type &ref {var}; // create a reference ref to var. 
+
+// ref and var must have the same type
+```
+
+##### Example
+
+```
+int num {100}; // create a variable num
+int &ref {num}; // create a reference ref to num
+
+cout << num << endl; // 100
+cout << ref << endl; // 100
+```
+
+Changing the reference also changes the original value
+
+```
+ref = 300;
+
+cout << num << endl; // 300
+cout << ref << endl; // 300
+
+```
+
+Changing the origional variable also changes the reference
+
+```
+num = 200;
+
+cout << num << endl; // 200
+cout << ref << endl; // 200
+```
+
+Remember, a reference is an alias to the variable
+
+#### Using references in range-based `for` loop
+
+good for accessing collection elements in each iteration
+
+- Passing using references reduces the overhead because there is no need to make a copy
+- If you aren't going to modify the collection elements, make the reference `const`
+
+##### Without references
+```
+vector <string> stooges {"Larry", "Moe", "Curly"};
+
+for (auto str: stooges){
+	str = "Funny"; // str is a copy of the value, so thischanges the copy, not the original
+}
+
+for (auto str: stooges){
+	cout << str << endl; // Larry, Moe, Curly - no change
+}
+```
+
+##### Using references
+```
+vector <string> stooges {"Larry", "Moe", "Curly"};
+
+for (auto &str: stooges){
+	str = "Funny"; // str is now an alias for these objects so we are changing the original vector
+}
+
+for (auto const &str: stooges){
+	cout << str << endl; // Funny, Funny, Funny
+}
+
+```
+
+#### Passing references to functions
+
+See Section 11 notes
+
+#### L-Values and R-Values
+
+##### L-Values
+
+- valus that have names and are addressable (have an address in memory)
+	- things are addressable if they can be used on the left hand side of an assignment statment 
+	- literals (e.g. `100`, `"Jack"`) are not l-values
+- modifiable if they are not constants
+
+```
+int x {100}; // x is an l-value
+
+string name; // name is an l-value
+```
+
+##### R-Values
+
+- anything that is not an l-value is an r-value
+- r-value is typically on the right-hand side of an assignment expression
+- r-values are 
+	- literals
+	- a temporary which is intended to be non-modifiable (something that the C++ creates)
+- Can be assigned to l-values explicity 
+	- l-values can be on the right hand side of the assignment statment 
+
+	
+```
+int x {100}; // 100 is an r-value
+
+int y = x+200 // (x+200) is an r-value because (x+200) is a temporary variable that the compiler creates
+
+string name {"Jack"}; // "Jack" is an r-value
+int max_num = max(20, 30); // max(20,30) is an r-value
+```
+
+
+
+##### L-Value References
+
+- the references we've used are l-value references, because we are referencing l-values
+
+```
+int x = 100; // x is an l-value
+
+int &ref1 = x; //ref 1 is a reference the l-value x
+ref1 = 1000; // this is okay since this is the equiavlent of saying x = 1000
+
+int &ref2 = 100; // Error - 100 is an r-value
+
+```
+
+- the same when we pass-by-reference
+
+
+```
+int square(int &n){
+	return n*n;
+}
+
+int num {10};
+
+square(num); // Ok
+
+square(5); // Error - can't reference r-value 5
+```
+
+### When to use pointers vs. references parameters
+
+If working with data structures that can have null values (e.g. arrays), you want to use pointers, not references. 
+
+
+#### Pass-by-value
+
+- C++ default
+- Use when the function does **not** modify the actual parameter and the parameter is small and efficient to copy
+	- think twice before passing collections (e.g. vectors, strings) by value because they have more overhead 
+
+
+#### Pass-by-reference using a pointer
+
+Pass-by-reference using a pointer when (1) the function does modify the actual parameter and (2) the parameter is expensive to copy and (3) it is okay for the pointer to contain a `nullptr` value.
+
+Pass-by-reference using a pointer to a `const` when (1) the function does **not** modify the actual parameter and (2) the parameter is expensive to copy and (3) it is okay for the pointer to contain a `nullptr` value.
+
+Pass-by-reference using a `const` pointer to a `const` when (1) the function does **not** modify the actual parameter and (2) the parameter is expensive to copy and (3) it is okay for the pointer to contain a `nullptr` value and (4) you do **not** want to modify the pointer itself.
+
+#### Pass-by-reference using a reference
+
+Pass-by-reference using a reference when (1) the function **does** modfiy the actual parameter and (2) the parameter is expensive to copy and (3) the parameter will never be `nullptr`.
+
+Pass-by-reference using a `const` reference when (1) the function does **not** modfiy the actual parameter and (2) the parameter is expensive to copy and (3) the parameter will never be `nullptr`.
+
