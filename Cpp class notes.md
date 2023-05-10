@@ -2041,7 +2041,7 @@ char *char_ptr {nullptr}; // points to a char
 	- all pointers in a program have the same size, regardless of the size of what they are pointing to
 	- don't confuse the size of a pointer with the size of what it points to 
 
-#### Storing an Address in pointer variable
+#### Storing an Address in Pointer Variable
 
 ```
 var_type var {var_value}; // create a variable var
@@ -2254,7 +2254,7 @@ C++ allows a subset of the arrithmetic operators to work with pointer variables 
 	cout << (z == ptrx) << endl; // true
 	```
 	 
-##### Regarding precedence
+##### Regarding Precedence
 
 `*score_ptr++`
 
