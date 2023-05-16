@@ -143,7 +143,7 @@ jack_account.balance;
 jack_account.deposit(100.00); // access the deposit method for the 
 ```
 
-If we have a pointer to an object, we need to dereference the pointer to use the dot operator
+If we have a pointer to an object, we need to dereference the pointer to use the dot operator (`.`)
 
 ```
 Account *jack_account = new Account(); //jack_account is not an account object but a pointer to an account object
@@ -152,7 +152,7 @@ Account *jack_account = new Account(); //jack_account is not an account object b
 (*jack_account).deposit(100.00);
 ```
 
-Or we can use the member of pointer operator (arrow operator)
+Or we can use the member of pointer operator (arrow operator) (`->`)
 
 ```
 Account *jack_account = new Account();
@@ -160,6 +160,9 @@ Account *jack_account = new Account();
 jack_account -> balance;
 jack_account -> deposit(100.00);
 ```
+
+The dot operator (`.`) cannot be overloaded nor can it refer to pointers. The the arrow operator (`->`) can be overloaded and it is meant to be applied to pointers.
+
 
 ### Class Member Access Modifiers (Public, Private, Protected)
 
@@ -646,6 +649,7 @@ public:
 ```
 
 Implementing constructors:
+
 ```
 //No-args constructor
 Player::Player(){
@@ -917,7 +921,7 @@ Type::Type (const Type &source);
 
 Example:
 ```
-Player::Player(const Playe &source);
+Player::Player(const Player &source);
 ```
 
 ##### Implementing the Copy Constructor
@@ -938,3 +942,577 @@ Player::Player(const Player &source)
 }
 ```
 
+##### Shallow Copying with the Copy Construtor
+
+- Assume the object we are copying has a raw pointer.
+- When the object is constructed, we'll allocated storage for the data that the pointer is pointing to. When we are done with the data, we will release the memory using the destructor.
+
+Shallow Copy is the default behavior provided by the compiler-generated copy constructor.
+
+- Shallow copies do member-wise copying of all the object attributes
+	- If one of your data types is a pointer, a shallow copy means the pointer is copied, **not** what it points to.
+	- newly created object and the object being copied both point to the same area of storage in the heap  
+- This creates issues when one of those objects is destroyed and its destructor is called. 
+	- When this happens, the object's destructor releases the memory allocated on the heap.
+	- The other object is still pointing to this released area and thinks the area is still valid
+- We can use a shallow copy if all the class attribures are "copyable"
+
+Example
+
+```
+class Shallow{
+private:
+	int *data; // Pointer
+
+public:
+	Shallow(int d); // Constructor
+	Shallow(const Shallow &source); //Copy Constructor
+	~Shallow(); // Destructor
+};
+
+
+// Shallow Constructor Implementation
+Shallow::Shallow(int d){
+	data = new int; // storage allocated dynamically
+	*data = d;
+}
+
+// Shallow Destructor Implementation
+Shallow::~Shallow(){
+	delte data; // free storage
+	cout << "Destructor freeing data" << endl;
+}
+
+// Copy Constructor
+Shallow::Shallow(const Shallow &source) : data(source.data){
+	cout << "Copy constructor - shallow" << endl;
+}
+```
+
+This copy constructor provides the same semantics as the default copy constructor.
+
+- In this copy constructor, only the pointer is copied - not what it is pointing to
+- This creates a **problem**: `source` and the newly created object **both** point to the same `data` area
+
+Example that will likely crash:
+
+```
+void display_shallow(Shallow obj); //Prototype
+
+int main(){
+	Shallow obj1 {100};
+	
+	// Pass obj1 to the function display_shallow(Shallow obj)
+	// A copy of obj1 will be created inside that function
+	display_shallow(obj1);
+	// After display_shallow executes, obj1's data is released
+	
+	obj1.set_data_value)(1000);
+	Shallow obj2 {obj1};
+	
+}
+```
+
+When the `Shallow` object `obj1` is passed to the function `display_shallow(Shallow obj)`, a copy of `obj1` will be created inside that function. When the function completes, the destructor is called on the copy of `obj1`. This releases the data for `obj1` as well as for the copy because both pointers are pointing to the same location in the heap. When we try to access that now-invalid memory, the program will probably crash. Also, when the destructor for `obj1` eventually is called, it will try to release memory that is no longer valid and probably will crash if it hasn't already.
+
+
+
+##### Deep Copying with the Copy Construtor
+
+- deep copy creates a copy of the pointed-to data itself
+	- this is in comparison to a shallow copy, which copies the pointer to the data
+- Each copy will have a pointer to unique storage in the heap 
+- Deep copy when you have a raw pointer as a class data member
+
+
+Example Class
+
+```
+class Deep{
+private:
+	int *data; // Pointer
+
+public:
+	Deep(int d); // Constructor
+	Deep(const Deep &source); //Copy Constructor
+	~Deep(); // Destructor
+};
+
+
+// Constructor Implementation
+Deep::Deep(int d){
+	data = new int; // storage allocated dynamically
+	*data = d;
+}
+
+// Destructor Implementation
+Deep::~Deep(){
+	delte data; // free storage
+	cout << "Destructor freeing data" << endl;
+}
+
+// Copy Constructor
+Deep::Deep(const Deep &source){
+	data = new int; // allocate storage
+	*data = *source.data; // copy the data itself using dereferencing
+	cout << "Copy constructor - deep" << endl;
+}
+```
+
+The above `Deep` class is the same as the `Shallow` class until we get to the copy constructor. Where the copy constructor differs is that in `Deep`, it creates a unique copy of the original heap storage in each object.
+
+Deep copy constructor - delegating constructor
+
+```
+Deep::Deep(const Deep &source) : Deep{*source.data}{
+		cout << "Copy constructor - deep" << endl;
+}
+```
+
+Delegate the copy to the constructor for `Deep`. That constructor (`Deep(int)`) expects an `int` value. The copy constructor passes the `int` `(*source.data)`, which is the data pointed to by `data`.
+
+
+Example using deep copying - will not crash
+
+```
+void display_shallow(Deep s); //Prototype
+
+int main(){
+	Deep obj1 {100};
+	
+	// Pass obj1 to the function display_deep(Shallow obj)
+	// A copy of obj1 will be created inside that function
+	display_deep(obj1);
+	// After display_deep executes, 	
+	obj1.set_data_value)(1000);
+	Shallow obj2 {obj1};
+	
+}
+```
+
+When the `Deep` object `obj1` is passed to the function `display_deep(Shallow s)`, a new object `s` that is a copy of `obj1` will be created inside that function. When the function completes, the destructor is called on `s`. `obj1` is not impacted because even though the data to which the pointers `s` point is the same as `ojb1`, the `s`'s data is located at a different spot on the heap. The storage being released is therefore unique to `s`. This means that even after `s` is destroyed, the data for the origional `obj1` is still there.
+
+#### Move Constructors[^1]
+
+[^1]: Feature was introduced in C++11.
+
+- sometimes when we execute code the compiler creates unnamed temporary values.
+	- In the example: `int total {100+200};` the steps the complier goes through is the following:
+
+1. `100+200` is evaluated and `300` is stored in an unnamed temporary value
+2. the `300` is then stored in the variable `total`
+3. The temporary value is discarded
+
+
+- The same happens with objects as well. 
+
+
+When is it useful
+
+- copy constructors are called whenver the compiler needs to make a copy of an object
+	- sometimes copy constructors ace called many times automatically due to the copy semantics of C++ - there is often a lot of copying going on behind the scenes that you don't notice.
+	- copy constructors doing deep copying can have a significant performance bottleneck
+- The move constructor moves an object rather than copy it
+	- this is much more efficient than copying 
+	- This is optional but recommended 
+- copy illusion - a complier optimization technique that eliminates unnecessary copying
+
+##### Background: R-value and L-Value references
+
+r-value references
+
+- used in moving semantics and perfect forwarding
+- move semantics is all about r-value references
+	- think of it as references to the temporary values discussed previously 
+- used by move constructor and move assignment operator to efficiently move an object rather than copy it
+- R-value reference operator (`&&`)
+
+
+```
+int x {100}; // x is an l-value
+int &l_ref = x; // l-value reference
+l_ref = 10; // change x to 10
+
+int &&r_ref = 200; //r-value ref
+r)ref = 300; // change r_ref to 300 (change the temporary variable)
+
+int &&x_ref = x; //compiler error - trying to assign an l-value to an r-value reference
+```
+
+L-value reference parameters
+
+```
+int x {100}; // x is an l-value
+
+void func (int &num); // expects an l-value reference
+
+func(x); // OK - x is an l-value
+func(200) // Error - 200 is an r-value 
+
+```
+
+R-value reference parameters
+
+```
+int x {100}; // x is an l-value
+
+void func (int &&num); // expects an R-value reference
+
+func(x); // Error - x is an l-value
+func(200) // OK - 200 is an r-value 
+```
+
+Can overload functions to accept both L-values and R-values
+
+```
+int x {100}; //L-value
+
+void func(int &num);// A - expects an L-value
+void func(int &&num); // B - expects an R-value
+
+func(x); //calls A - x is an L-value
+func(200); //calls B - 200 is an R-value
+
+```
+
+Move Class
+
+```
+class Move{
+private:
+	int *data; // Pointer
+
+public:
+
+	// Methods
+	void set_data_value(int d) {
+		*data = d;
+	}	
+	int get_data_value(){
+		return *data;
+	}
+	
+	// Constructors
+	Move(int d); // Constructor
+	Move(const Move &source); //Copy Constructor
+	~Move(); // Destructor
+};
+
+
+// Copy Constructor Implementation - standard deep copy
+Move::Move(const Move &source){
+	data = new int; // allocate storage
+	*data = *source.data; // copy the data itself using dereferencing
+	cout << "Copy constructor - deep" << endl;
+}
+```
+
+Inefficient copying:
+
+```
+Vector<Move> vec; // create a vector of Move objects
+
+vec.push_back(Move{10});
+vec.push_back(Move{20});
+```
+
+`Move{10}` and `Move{20}` are creating temporary, unnamed objects so they are going to be R-values. The compiler is going to use the copy constructor to make copies of these. 
+
+##### How the Move Constructor Works
+
+Instead of making a deep copy, the move constructor "moves" the resource. It does this by copying the address of the resource from `source` to the current object and nulls our the pointer in the source pointer. 
+
+We now have an object who owns the data on the heap and then the original object with a null pointer to that data. Thi sis very efficient because we are not doing a copy at all.
+
+##### Move Constructor Syntax
+
+Very similar to the syntax for a shallow copy constructor but it has two differences.
+
+1. no `const` qualifier for the paramter `source` - we need to be able to modify the source to null out its pointer
+2. The paramter is an R-value reference (notice the `&&`).
+
+```
+Type::Type(Type &&source);
+```
+
+##### Implementing the Move Constructor
+
+```
+class Move{
+private:
+	int *data; // Pointer
+
+public:
+
+	// Methods
+	void set_data_value(int d) {
+		*data = d;
+	}	
+	int get_data_value(){
+		return *data;
+	}
+	
+	// Constructors
+	Move(int d); // Constructor
+	Move(const Move &source); //Copy Constructor
+	Move(Move &&source); //Move Constructor
+	~Move(); // Destructor
+};
+```
+
+The move constructor "steals" the data and then nulls out the source pointer
+
+```
+// Move Constructor Implementation
+Move::Move(Move &&source) 
+	: data{source.data} {
+		source.data = nullptr; // super important
+}
+```
+
+##### Using the Move Constructor
+
+```
+Vector<Move> vec;
+
+vec.push_back(Move{10});
+vec.push_back(Move{20});
+
+```
+
+Move constructors will be called for the temporary R-values.
+
+### The `this` pointer
+
+- `this` is a reserved keyword
+	- Contains the address of the object - so it's a pointer to the object currently being used by the class member methods
+-  Can only be used in the class cope
+- Python uses `self` keyword for the same thing
+- All member access is done via the `this` pointer.
+	- C++ allows you to use member names directly, but behind the scenes it's actuall using the `this` pointer 
+- Can be used by the programmer 
+	- to access data member and methods
+	- to determine if two objects are the same
+	- Can be dereferenced (`*this`) to yield the current object 
+
+
+```
+void Account::set_balance(double bal){
+	balance = bal; // this->balance is implied
+}
+```
+
+Use to disambiguate identifier use
+
+```
+// Bad
+void Account::set_balance(double balance){
+	balance = balance; // which balance? Ambiguous
+}
+
+// Good
+void Account::set_balance(double balance){
+	this->balance = balance; //Unambigous
+}
+```
+
+Sometimes it is useful to know if two objects are the same object:
+
+```
+int Account::compare_balance(const Account &other) {
+	if (this == &other){
+		std::cout << "Same Objects" << std::endl;
+		...
+	}
+}
+
+jack_account.compare_balance(jack_account);
+```
+
+We will use the `this` when we oveload the assignment operator.
+
+
+### Using `const` with Classes
+
+- pass arguments to class methods as `const`
+- We can also create `const` objects
+
+
+Example: `*villain` is a const object so it's attributes cannot change
+
+```
+const Player villain {"Villain", 100, 55};
+```
+
+What happens is we call member methods on a const object?
+
+```
+villain.set_name("Nice guy"); //Error - trying to use a setter method to modify the object
+
+std::cout << villain.get_name() << std::endl; //Error - compiler assumes that the method could change the object
+```
+
+```
+void display_player_name(const Player &p){
+	cout << p.get_name() << endl;
+}
+
+display_player_name(villain); //Error - get_name() method not expecting a const object. 
+// Even if the object you pass in isn't a const, because the function makes it const then the error continues
+```
+
+Solution: we need to tell the compiler that certain methods will not modify the object. To do that, all we have to do is put the `cost` modifier before the `;` in the method prototype. 
+
+example:
+
+```
+Class Player{
+	private: 
+		...
+	public:
+		std::string get_name() const;
+		...
+};
+```
+
+- compiler will allow this method to be called on `const` objects
+	- can still call this method on non-`cost` objects 
+- compiler will produce a compiler error if you try to modify any of the attributes in the method
+- `const` methods having `const` qualifiers is referred to as const correctness
+- Rule of thumb is that any method you have in your class that don't modify an object (such as any getter methods) should be `const`.
+
+
+### Static Class Members
+
+- class data members can be declared as `static`
+	- tells compiler that this data membe belongs to the class, not the objects
+	- useful for storying class-wide information
+		- example: want to keep track of how many `Player` objects exist 
+- Class functions can be declared as static
+	- independent of any objects
+	- can be called using the class name  
+
+Example: Want to keep track of how many `Player` objects exist
+
+Player.h
+
+```
+class Player{
+private:
+	static int num_players;
+	...
+
+public:
+	static int get_num_players(); //static function prototype
+	...
+};
+```
+
+Player.cpp
+
+```
+#include "Player.h"
+
+// initialize static variable. Must happen once and only once
+int Player::num_players {0};
+
+int Player::get_num_players(){
+	return num_players;
+}
+
+// Update the Constructor - assume declared with default values
+
+Player::Player(std::string name_val, int health_val, int xp_val}
+	: name{name_val},
+	health{health_val},
+	xp{xp_val}
+	{
+		++num_players;
+}
+
+
+// Decrement in the Destructor
+
+Player::~Player(){
+	--num_players;
+}
+
+```
+
+In the Player.cpp file
+
+- Initialize the static variable in Player.cpp file. This must happen once and only once. 
+
+- The function `get_num_players()` is static. This means it only has access to static data class members. 
+- Best place to increment the player count is in the constructor
+	- be careful if you have overloaded constructors. You may have to increment the static variable `num_players` in more than once place.
+- Best place to decrement the player count is in the destructor
+
+
+Using the static methods in main.cpp:
+
+```
+void display_active_players() {
+    cout << "Active players: " << Player::get_num_players() << endl;
+}
+
+int main() {
+    display_active_players(); // 2
+    Player hero{"Hero"};
+    display_active_players(); // 1
+    return 0;
+}
+
+```
+
+### Structs vs Classes
+
+- In addition to defining a `class` we can declare a `struct`
+- `struct` comes from the C programming language
+- `struct`s are essentially the same as a `class` except its members are public by default
+
+
+```
+struct Name{
+	...
+}
+```
+
+General Guidelines:
+
+- `struct` - holds data and is passive
+	- use `struct` for passive objects with public access
+	- don't declare methods in a `struct`
+- `class`
+	- use `class` for active objects with private access
+		- have all data be private and implement getter/setters as needed 
+	- implement member methods as needed   
+
+
+### Friends of a Class
+
+- Friend - a function or class that has access to a private class member, but is not a member of the class it is accessing
+	- Functions can be regular, non-member functions or they can be member methods of another class
+	- The class is another class that has access to private class members of the first class (the one granting friendship)
+- Friendship must be granted explicitly
+	- Friendship must be granted not taken - class must explicitly declare its friends in its class declaration using the `friend` keyword.
+	- Friendship is not symetric - A being a friend of B does **not** require that B be a friend of A
+	- Friendship is not transitive
+		- if A is a friend of B and B is a friend of C, that does not make A a friend of C 
+	- Friendship is not inherited
+- Friendships should only be granted when it makes sense in the design of the system. Even then, only the minimal necessary friendship should be granted.
+
+
+```
+class Player{
+
+	// make a stand-alone function a friend
+	friend void display_player(Player &p) 	
+	// make a method in another class a friend
+	friend void Other_class::display_player(Player &p);
+	
+	// declare an entire separate class as a friend
+	friend class Other_class;
+}
+
+```
