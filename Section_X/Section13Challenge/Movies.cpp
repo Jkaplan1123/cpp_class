@@ -33,7 +33,7 @@ Movies::~Movies() {
 bool Movies::add_movie(std::string name, std::string rating, int watched) {
     // you implement this method
 
-    if(! Movies::have_watched(name)){
+    if(! have_watched(name)){
         movies.push_back(Movie{name, rating, watched});
         return true;
     }
@@ -55,7 +55,7 @@ bool Movies::increment_watched(std::string name) {
    // you implement this method
 
     int idx {0};
-    idx = Movies::find_movie(name);
+    idx = find_movie(name);
     if (idx != -1){
         (movies.at(idx)).increment_watched();
         return true;
@@ -71,7 +71,7 @@ bool Movies::increment_watched(std::string name) {
     *********************************************************************/
 int Movies::find_movie(const std::string name) const {
 
-    if(Movies::have_watched(name)){
+    if(have_watched(name)){
         int idx {0};
         while ((movies.at(idx)).get_name() != name){
             idx++;
