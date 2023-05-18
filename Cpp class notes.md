@@ -4159,6 +4159,7 @@ General Guidelines:
 		- if A is a friend of B and B is a friend of C, that does not make A a friend of C 
 	- Friendship is not inherited
 - Friendships should only be granted when it makes sense in the design of the system. Even then, only the minimal necessary friendship should be granted.
+- [Implementing Friend Functions and Classes](https://www.geeksforgeeks.org/friend-class-function-cpp/)
 
 
 ```
