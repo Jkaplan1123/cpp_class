@@ -112,6 +112,18 @@ Mystring Mystring::operator*(int n) const{
     // Mystring temp {buff};
     // delete [] buff;
 
+    /*
+    // His ground-up implementation
+    size_t buff_size = std::strlen(str) * n + 1;
+    char *buff = new char[buff_size];
+    strcpy(buff, "");
+    for (int i =1; i <=n; i++)
+        strcat(buff, str);
+    Mystring temp{buff};
+    delete [] buff;
+    return temp;
+    */
+
 
     return temp;
 }
