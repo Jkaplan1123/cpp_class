@@ -56,7 +56,7 @@ Basic Rules:
 
 - It could be useful to define what `std::cout << p1` means for an object in the `Player` class. Do I output the name, health, XP?
 
-#### Example Class
+#### Example Class - Before Operator Overloading
 
 ##### Header (`.h`) File
 
@@ -323,7 +323,9 @@ Similar to the Copy Assignment but we are not deep copying from the right-hand s
 Basic Method Declaration
 
 ```
-ReturnType Type::operatorOp()
+ReturnType operatorOP(); //.h file
+
+ReturnType Type::operatorOp(); //.cpp file 
 ```
 
 - The `Op` in `operatorOp` refers to the specific operator to be overwritten. For example `operator++` overloads the increment (`++`) operator.
@@ -380,8 +382,11 @@ Binary operators are applied to two operands. These include the basic mathmatica
 - note that the `-` operator here is the binary difference operator for subtracting two values rather than the unary operator that turns a value negative 
 
 
+
 ```
-ReturnType Type::operatorOp(const Type &rhs);
+ReturnType operatorOP(const Type &rhs); //.h file
+
+ReturnType Type::operatorOp(const Type &rhs); //.cpp file
 ```
 
 This is the same as the syntax for returning the unary operators except we have a single parameter in the method parameter list 
