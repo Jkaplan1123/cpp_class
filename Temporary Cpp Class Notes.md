@@ -1,583 +1,468 @@
-## Section 14 - Operator Overloading
+## Section 15 - Inheritance
 
-### What is Operator Overloading?
+### What is Inheritance
 
-- using traditional operators (e.g. `+`, `=`, `*`, etc.) with user-defined types
-	- traditional operators designed to be used with primitive built-in types 
--  operator overloading allows user-defined types to behave similar to built-in types (e.g. string concatenation)
--  Can make code more readable and writeable
--  Operator overloading is not done automatically (except for the asssignment operator `=`) - they must be explicitly defined
-	- The compiler does not make assumptions as to what it means to add, multiply, etc. in the context of your class. 
-	- in most cases it doesn't make sense to add, multiply, etc. user-defined types (e.g. what does it mean to "add" two `Player` objects?)
-	- Only overload operators if it makes sense
+#### Overview
+
+- Provides a method for creating new classes from existing classes
+	- The new class contains the data and behaviors of the existing class
+- Allows for reuse of existing classes
+	- Modeling similar behavior across multiple classes would otherwise require lots of code duplication
+- Allows new classes to mofiy behaviors of existing classes to make it unique without actually modifying the original class
+	- the original class probably has already been  tested and may be being used by other programs, so we want to avoid modifying it
+	- Allows us to not have to rewrite features from the underlying class in the new class - reduces the possiblity of error
+- Inheritance must make sense - leverage commonality amongst classes
+	- Teacher, Administrator, and   
 
 
+##### Examples of Related Classs:
 
-Suppose we have a `Number` class that models any number
+- Person, Employee, Student, Faculty, Staff, Administrator
+	- Person is underlying class
+	- Employee can be a child class of Person and a parent class for Facutly, Staff, and Administrator
+- Character, Player, Enemy, LevelBoss, Civilian, etc.
+	- All Characters will have data fields such as name, health and location
+	- The Player class will also have an XP field and a money field 
+	- Enemy and LevelBoss classes will probably also have a field that indicates which loot items they drop
+- etc.
 
-Assume that `a`, `b`, `c` and `d` are all `Number` objects
+Account Classes:
 
-- If we weren't using operator overloading, we could implement functions or methods to achieve what we want. For example:
-	- Using functions:
+- Account
+	- balance, deposit, withdraw
+-  Savings
+	- balance, deposit, withdraw, interest rate, etc.
+- Checking
+	- balance, deposit, withdraw, minimum balance, overdraft fee, etc. 
+-  Trust
+	-  balance, deposit, withdraw, trustee, etc.
+
 	
-	```
-	// assume mulitply(), add(), and divide() 
-	// are all defined using primitive types
-	Number result = multiply(add(a,b), divide(c,d))
-	```
-	
-	- Using member methods:
-	
-	```
-	// assume mulitply(), add(), and divide() 
-	// are all defined using primitive types
-	Number result = (a.add(b)).multiply(c.divide(d));
-	```
+#### Terminology 
 
-- Alternatively, we could use overloaded operators - much cleaner and easier on the programmer
+- Inheritance: the process of creating new classes from an existing class
+	- Single Inheritance: a new class is created from another "single" class
+	- Multiple Inheritance: a new class is created from two (or more) other classes
 
-	```
-	Number result = (a+b)*(c/d)
-	```
-	
+- Base Class (parent class, super class): the class being extended or inherited from 
+- Derived Class (child class, sub class): the class being created from the Base class. Will inherit attributes and operations from the Base class
 
-Most operators can be overloaded, but come cannot. The operators that cannot be overloaded are: `::`, `:?`, `.*`, `.`, and `sizeof`.
+- "Is-A" Relationship
+	- (Classic) Public inheritance
+	- Derived classes are sub-types of their Base classes
+		- "A Circle **is a** Shape", "A Savings Account **is an** Account", "An Enemy **is a** Character", etc.  
+	- Can use a derived class wherever we use a base class object
+- Generalization: combining similar classes into a single, more general class based on common attributes
+	- general class is more abstract and can potentially be reused more easily 
+- Specialization: creating new classes from existing classes providing more specialized attributes or operators
+	- opposite of generalization 
+- Inheritance or Class Hierarchies: organization of our inhertitance relationships 
+	- Use generalization or specialization to create Class Hierarchies 
+	- [UML Class Diagram](https://www.visual-paradigm.com/guide/uml-unified-modeling-language/uml-class-diagram-tutorial/) - how we display class hierarchies and relationships
+	- Inheritance is transitive
 
-Basic Rules:
 
-- Precedence and Associativity of the operator cannot be changed
-- the 'arity' cannot be changed (i.e. can't make the division operator unary)
-- Cannot overload operators for primitive types (e.g. `int`, `double`, etc.)
-- Can't create new operators
-- `[]`, `()`, `->`, and the assignment operator (`=`) **must** be declared as member methods
-- Other operators can be declared as member methods or global functions
+![Example class hierarchy for people in a university. Very similar to the bulleted list above.](Images for Class Notes/Section 15 - Employee Class Hierarchy.gif)
 
-#### Examples of Operator Overloading
+In this image:
 
-- It could be useful to define what `std::cout << p1` means for an object in the `Player` class. Do I output the name, health, XP?
+- Person
+	- Student
+		- Undergrad
+		- Masters
+		- PhD 
+	- Employee 
+		- Staff
+			- Professional
+			- Hourly 
+		- Faculty
+			- Teaching/Lecturer
+			- Tenure Track  
 
-#### Example Class - Before Operator Overloading
+Inheritance is transitive so in the above example:
 
-##### Header (`.h`) File
+- an Undergrad is a Student, and a Student is a Person, so an Undergrad is a Person
+- a Lecturer is a Faculty member, and a Faculty member is an Employee, and an Employee is a Person
+	- A Lecturer is therefore a Faculty member, Employee, and a Person
+- a Professional is a Staff member, and a Staff member is an Employee, and an Employee is a Person
+	- A Professional is therefore a Staff Member, Employee, and a Person
+-  While Lecturers and Professionals are both Employees
+	- a Lecturer is **not** a Staff member
+	- a Professional is **not** a Faculty member  
+
+Inheritance is not-bidrectional:
+
+- A Person is not an Employee
+
+
+### Inheritance vs. Composition
+
+- Both inheritance and composition allow for reuse of existing classes
+- Public Inheritance uses "Is-A" relationships
+- Composition uses "Has-A" relationships
+	- e.g. "a Person **has an** account", "Player **has a** Special Attack"
+	- used for situations where the "Is-A" relationship doesn't apply
+	- Create the association at the highest level where it applies - this associate will flow down to all derived classes
+		- e.g. if `Person` has an `Account` than so will `Student` and `Employee` and all their derived classes
+	- Technically, when we model class data members we are using compoistion. These instance variables are gnerally perimitive types so we don't model them in class diagrams, but the concept is the same.
+- Rule of Thumb: if you can model a relationship with composition, you should do that instead of using inheritance
+
+Declaring a Class using Composition
 
 ```
-class Mystring
-{
-private:
-    char *str; // pointer to a char[] that holds a C-style string
-    
-public:
-    Mystring();  // No-args contstructor
-    Mystring(const char *s); // Overloaded contstructor              
-    Mystring(const Mystring &source); // Copy constructor
-    ~Mystring(); // Destructor
-    
-    // Methods
-    void display() const;
-    
-    // getters
-    int get_length() const;
-    const char *get_str() const;
+class Person{
+	private:
+		std::string name; //has-a name
+		Account account; //has-a account
+}
+```  
+
+### Deriving Classes from Existing Classes
+
+Start with the class declaration for the base class
+
+```
+class BaseClass {
+	// Base class members ...
 };
 ```
 
-##### `.cpp` File with Explanations
-
-The code from the `.cpp` file is broken up into parts and explained
-
-###### `#include` Statements
+Then declare the derived class
 
 ```
-#include <cstring>
-#include <iostream>
-#include "Mystring.h"
+class DerivedClass: access-specifier BaseClass{
+	// Derived class members ...
+};
 ```
 
-###### No-args constructor
+- `access-specifier` can be `public`, `private`, or `protected`.
+	- if you don't provide and `access-specifier` then `private` inheritance is used 
+	- Most object oriented languages only support public inheritance
+	- [public, private, and protected inheritance](https://www.programiz.com/cpp-programming/public-protected-private-inheritance) overview
+- `BaseClass` is the name of the base class 
+- `DerivedClass` is the name of the class derived from the base class
 
+Access Specifiers
 
-```
-Mystring::Mystring() 
-    : str{nullptr} {
-    
-    str = new char[1];
-    *str = '\0';
-}
-```
+- `public`
+	- most common
+	- establishes an "is-a" relationship between the derived and base classes
+- `private` and `protected`
+	- establishes a "derived class **has a** base class" relationship
+	- "is implemented in terms of" relationship
+	- beyond the scope of this course
 
-We want to store an empty string as an array consisting of a single character with the null terminator (`\0`) in it. 
-
-- `str = new char[1]` Creates a pointer to a new location on the heap with space for 1 character
-- `*str = '\0'` puts the terminator character in the location on the heap
-
-###### Overloaded constructor
-
-```
-Mystring::Mystring(const char *s) 
-    : str {nullptr} {
-    
-	     // check to see if nullptr
-        if (s==nullptr) {
-            str = new char[1];
-            *str = '\0';
-        }
-        
-
-        else {
-            str = new char[std::strlen(s)+1];
-            std::strcpy(str, s);
-        }
-}
-```
-- First, check to see if a `nullptr` was passed in. If so, treat it the same was as the noargs constructor
-- `str = new char[std::strlen(s)+1];` creates a pointer to a new location on the heap with enough space to hold the entire string being passed in.
-- Then copy the input string to the newly created location on the heap (`std::strcpy(str, s)`).
-
-
-###### Copy constructor
+Example - `Account` and `Savings_Account` classes
 
 ```
-Mystring::Mystring(const Mystring &source) 
-     : str{nullptr} {
-     
-        // Create a pointer to a new location on the heap with
-        // enough space to hold the entire string from the source
-        // being copied. Then copy the input string to that
-        // location on the heap. This is a deep copy.
-        str = new char[std::strlen(source.str )+ 1];
-        std::strcpy(str, source.str);
-}
+class Account{
+	// Account class members ...
+};
 
+class Savings_Account: public Account{
+	// Savings_account class members ...
+};
 ```
 
-- `&source` is the address of the item being copied
-- `str = new char[std::strlen(source.str )+ 1];` creates a pointer to a new location on the heap with enough space to hold the entire string being copied.
-- `std::strcpy(str, source.str);` copies the input string to the newly created location on the heap
+- This implementation means `Savings_Account` is a `Account`
+- `Saving_Account` has access to everything in the `Account` class and can implement its own special behaviors
+	- the derived class can override any methods inherited from the base class
+	- In our `Account` and `Savings_Account` example, you could implement separate `withdraw` and `deposit` methods in `Savings_Account` than what you inherited from the `Account` class.
+- We can now create `Account` and `Savings_Account` objects
 
-####### Destructor
+### Protected Members and Class Access
 
-```
-Mystring::~Mystring() {
-    delete [] str;
-}
-```
-
-###### Methods
+The `protected` class member modifier:
 
 ```
-// Display method
-void Mystring::display() const {
-    std::cout << str << " : " << get_length() << std::endl;
-}
-
-// length getter
- int Mystring::get_length() const { return std::strlen(str); }
- 
-  // string getter
- const char *Mystring::get_str() const { return str; }
+class Base {
+	protected:
+		// protected base class members ...
+};
 ```
 
-### Overloading the Copy Assignment Operator
+- The `protected` class members
+	- accessible from the `Base` class itself
+	- Accessible from classes derived from `Base` using public inheritance or protected
+		-  accessible from the class means that class members can access it
+	- Not accessible by objects of `Base` or `Derived`
+		- Act like `private` members in this regard
+		- Basically behave like `private` members unless inheritance is involved
 
-- C++ uses the copy assignment operator (`=`) when it assigns one object to another object. 
-- Do not confuse assignment with initialization - Assignment occurs when an object has already been initialized and you want to assign another object to it. 
 
-	```
-	Mystring s1 {"Frank"}; // initialization
-	Mystring s2 = s1; // NOT assignment. This is initialization
-	Mystring s3 {s1}; // T the same as Mystring s2 {s1}
+Example:
+
+```
+class Base{
+	public:
+		int a; //public Base class members
 	
-	s2 = s1; // assignment
-	```	
+	protected:
+		int b; //protected Base class members
 	
-	- `Mystring s2 = s1;` is initialization, not assignment. It is the equivalent of the statement `Mystring s2 {s1};`. This is because `s2` has not been created yet. 
-	- `s2 = s1` is assignment because `s2` has arlaready ben created an initialized
-- If you do not provide a user-defined overloaded assignment operator, then the C++ compiler will provide a computer generated one for you.
-	- Very similar to default copy constructor
-	- Default assignment is memberwise assignment (shallow copy). 
-	- If we have a raw pointer data then we must deep copy.
+	private:
+		int c; //private Base class members
+};
+``` 
+|                                             Base Class | Inheritance Type | Derived Class                                                            |
+|-------------------------------------------------------:|:----------------:|--------------------------------------------------------------------------|
+| `public`: `a` <br> `protected`: `b` <br>`private`: `c` |      public      | `public` : `a` <br>`protected`: `b` <br>`private`: Inherited but Not Accessible    |
+| `public` : `a` <br>`protected`: `b` <br>`private`: `c` |     protected    | `protected` : `a` <br>`protected`: `b` <br>`private`: Inherited but Not Accessible |
+| `public` : `a` <br>`protected`: `b` <br>`private`: `c` |      private     | `private` : `a` <br>`private`: `b` <br>`private`: Inherited but Not Accessible     |
+
+- Access with Public Inheritance
+	- `public` class members are inherited and are `public` in the derived class
+	- `protected` class members are inherited and are `protected` in the derived class
+	- `private` class members are inherited but the derived class does not have access to them
+		- any attempt to access base class `private` class members from the derived class will result in a compiler error 
+- Access with `protected` Inheritance - Remember: this is not "is-a" inheritance
+	- `public` class members are inherited and are **`protected`** in the derived class
+	- `protected` class members are inherited and are `protected` in the derived class
+	- `private` class members are inherited but the derived class does not have access to them
+		- any attempt to access base class `private` class members from the derived class will result in a compiler error 
+- Access with `private` Inheritance - Remember: this is not "is-a" inheritance
+	- `public` class members are inherited and are **`private`** in the derived class
+	- `protected` class members are inherited and are **`private`** in the derived class
+	- `private` class members are inherited but the derived class does not have access to them
+		- any attempt to access base class `private` class members from the derived class will result in a compiler error 
+- If you need to access a `private` variable in a derived class, you will need to use a getter or a setter from the base class
 
 
-Assignment Operator must be overloaded as a member function
+### Constructors and Destructors with Inheritance
 
-#### Method Prototype
+#### Constructors and Class Initialization
+
+- a derived class does **not** inherit
+	- base class constructors (including default, copy, and move)
+	- base class destructors
+	- base class overloaded assignment operators
+	- base class friend functions
+- However, the derived class constructors, destructors, and overloaded assignment operators can invoke the base class versions
+- C++11 allows explicit inheritnace of base 'non-special' constructors with
+	- `using Base::Base;` anywhere in the derived class declaration
+	- Lots of rules involved, better to define constructors yourself  
+
+
+#### Constructors
+
+
+- The base part of the derived class must be initialized before the derived class is initialized
+	- When a derived object is created: the base class constructor executes **then** the derived class constructor executes
+
+
+#### Destructors
+
+- Class destructors are invoked in the reverse order as constructor - the derived part of the derived class **must** be destroyed **before** the base class destructor is invoked
+	- When a derived object is destroyed: the derived class destructor exectutes **then** the base class destructor executes
+	- Each destructor should free resources allocated in its own constructors
+
+#### Example
 
 ```
-Type &Type::operator=(const Type &rhs);
-```
+class Base {
+	public:
+		// Constructor
+	   	Base(){ 
+	   		cout << "Base no-args constructor" << endl; 
+	    }
+	    
+	    // Destructor
+	    ~Base(){ cout << "Base destructor" << endl; }
+};
 
-- This goes in the `.h` file. 
-- We overload methods using the keyword `operator` followed by the operator that we wish to overload. 
-	- In this case the method name is `operator=` 
-- This is not construction, this is assignment. The left-hand side already exists. 
-- Returns a reference to a `Type` object. This is useful for avoiding extra copies if we want to return by value.
-	- We want to allow chain assignments (e.g. `p1 = p2 = p3`).
-- Replace `Type` with the appropriate class name. For example:
-
-	```
-	Mystring &Mystring::operator=(const Mystring &rhs);
-	```
+class Derived : public Base {
+	public:
 	
-	- Once this code is implemented it will allow us to write code like: `s2 = s1;`. When we do so, the compiler will see `s2.operator=(s1);`. This makes the code much more readable
+		// Constructor
+	    Derived(){
+	    	cout << "Derived no-args constructor " << endl; 
+	    }
+	    
+	    // Destructor
+	    ~Derived(){ cout << "Derived destructor " << endl; }
+};
 
+int main(){
+	Base base_object {}; 	
+	Derived derived_object {};
+	return 0
+}
+```
 
-#### Implementing the Overloaded Copy Assignment Operator (deep copy)
+- `Base base_object{}` creates a `Base` object. The output reads `Base no-args constructor`
+	- when `base_object` is destroyed the output reads `Base destructor`. 
+- `Derived derived_object {};` creates a `Derived` object. The output reads `Base no-args constructor` and then (on a new line) `Derived no-args constructor`. This is because the `Base` class constructor executes before the `Derived` class constructor
+	- when `derived_object` is destroyed the output reads: `Derived destructor` followed (on a new line) by `Base destructor`. This is because the destructors are invoked in the opposite order that the constructors were invoked. That means the derived class's destructors are invoked before the base class's constructors
+
+### Passing Arguments to Base Class Constructors
+
+- base part of a derived class must be initialized first - that means the base constructor must be invoked to do that initialization
+	- we can invoke whichever base class constructor we wish in the initialization list of the derived class
 
 ```
-Mystring &Mystring::operator=(const Mystring &rhs) {
-    std::cout << "Copy assignment" << std::endl;
-    if (this == &rhs){
-        return *this;
+class Base{
+public:
+
+	// Declaring the Base class constructor
+	Base();
+	Base(int);
+	...
+};
+
+// Implementing the Derived class Constructor
+Derived::Derived(int x) 
+	: Base(x), {optional initializers for Derived} { //initialization list
+	
+	// code
+
+}
+```
+
+- if we don't explicitly invoke the desired `Base` class constructor, then the no-args constructor will be invoked automatically
+
+```
+using namespace std;
+
+class Base {
+	private:
+	    int value;
+	public:
+	   Base() : value{0} { cout << "Base no-args constructor" << endl; }
+	   Base(int x) : value{x} { cout << "Base (int) overloaded constructor" << endl; }
+	   ~Base(){ cout << "Base destructor" << endl; }
+};
+
+class Derived : public Base {
+    using Base::Base;
+private:
+    int doubled_value;
+public:
+	Derived()
+        :Base {}, doubled_value {0} { // explicitly calls the Base no-args constructor
+            cout << "Derived no-args constructor " << endl; 
+   	}
+    Derived(int x) 
+        :  Base{x},  doubled_value {x * 2} {  // calls the overloaded Base constructor
+            cout << "Derived (int) constructor" << endl; 
     }
-    delete [] this->str;
-    str = new char[std::strlen(rhs.str) + 1];
-    std::strcpy(this->str, rhs.str);
-    return *this;
+    ~Derived() { cout << "Derived destructor " << endl; }
+}; 
+```
+
+| Code                     | Output                                                    |
+|--------------------------|-----------------------------------------------------------|
+| `Base base;`             | Base no-args constructor                                  |
+| `Base base {100};`       | int Base constructor                                      |
+| `Derived derived;`       | Base no-args constructor <br> Derived no-args constructor |
+| `Derived derived {100};` | int Base constructor <br> Derived Base constructor        |
+
+
+### Copy/Move Constructors and Operator= with Derived Classes
+
+- Copy and Move constructors and Copy/Move assignment operators are not inherited from the Base class
+- You may not need to provide your own - the compiler-provided versions may be just fine
+- We can explicitly invoke the Base class versions from the Derived class
+
+
+#### Copy/Move Constructor
+
+Note: these notes are written for the Copy Constructor but the Move Constructor works the same way
+
+- Can invoke Base copy constructor explicilty - the code below invokes the `Base` copy consturctor in the `Derived` copy constructor initialization list
+	- Because we are using "is-a" inheritance, a `Derived` is a `Base`. That means we can pass in a `Derived` to a method that expects a `Base`
+	- The `Base` part of the `Derived` object '*other*' will be **sliced** and passed to the `Base` constructor
+
+```
+Derived::Derived( const Derived &other)
+	: Base(other), {Derived initialization list} {		//code
 }
 ```
 
-- Remember: the object on the left-hand side of an assignment statement is referred to by the `this` pointer. The object on the right-hand side is being passed into the method.
-	- The right-hand side object has been named `rhs` for clarity 
-- Since we are assigning the right-hand side to the left-hand side, we must make a deep copy of the right-hand side object's attributes and copy them over to the left-hand side object
-	- The left-hand side object will be overwritten. 
-- The above code is only for a single raw pointer. If your class has multiple raw pointers, then don't forget to deep copy each of them.
-
-##### Working through the code:
-
-- `if (this == &rhs)` - check for self-assignment. If so, return the left-hand side object
-- `delete [] this->str;` - deallocate storage for `this->str` since we are overwriting it
-- `str = new char[std::strlen(rhs.str) + 1];` - allocate storage for the deep copy
-	- allocate space in the left-hand side object for the right-hand side object's data. 
-- `std::strcpy(this->str, rhs.str);` - copy the data over to the left-hand side from the right-hand side
-- `return *this;` - return the current by reference to allow chain assignment
- 
-
-
-
-### Overloading the Move Assignemnt Operator
-
-- works with R-value references
-- You can choose to overload the move assignment operator. C++ will use the copy assignment operator if necessary.
-
-	```
-	Mystring s1;
-	s1 = Mystring{"Jack"}; // move assignment
-	```
-
-- if we have a raw pointer we should overload the move assignment operator for efficiency
-
-
-#### Assignment Statement Syntax:
+##### Example
 
 ```
-Type &Type::operator=(Type &&rhs);
-```
+class Base {
+	private:
+	    int value;
+	public:
+	   // Same constructors and destructors as before
+	   
+	   // Copy Constructor
+	   Base(const Base &other) 
+        : value {other.value} {
+         cout << "Base copy constructor" << endl;     
+    	}
+};
 
-- Very similar to copy assignment but a few major differences: 
-	- Use the `&&` operator in the parameter list to tell the compiler that the right-side obect is an r-value
-		- right-side value will be an r-value reference
-	- Right-hand side object reference can't be `const` 
-
-##### Move Assignment Operator - `Mystring` Example:
-
-```
-Mystring &Mystring::operator=(Mystring &&rhs) {
-    std::cout << "Using move assignment" << std::endl;
-    if (this == &rhs){ 
-        return *this;
-    }
-    delete [] str;
-    str = rhs.str;
-    rhs.str = nullptr;
-    return *this;
-    
-}
-```
-
-###### Working Through the Code
-
-Similar to the Copy Assignment but we are not deep copying from the right-hand side object
-
-- `if (this == &rhs)` - check for self-assignment. If so, return the left-hand side object
-- `delete [] str;` - deallocate current storage pointed to by the left-hand side object since we are overwriting i
-	- for example in the code below we initialize a `Mystring` object `s1` with the value `"Hello"`. We then want to assign `s1` the value `"Hola"`. The `delete [] str;` command deletes the spot on the heap where `"Hello"` is stored. This step is critical.
-
-	```
-	Mystring str1 {"Hello"};
-	str1 = "Hola"
-	```
-	 
-- `str = rhs.str;` - steal the pointer
-	- this is a copy of a pointer variable, not a full deep copy  
-- `rhs.str = nullptr;` - null out the rhs object (Critical)
-- `return *this;` - return the current by reference to allow chain assignment
-
-### Oveloading Operators as Member Methods
-
-#### Unary Operators
-
-[Unary operators](https://www.geeksforgeeks.org/unary-operators-cc/) act upon a single operand to produce a new value. These operators are `-`, `++`, `--`, `!`, `&`, and `sizeof()`.
-
-- `-` is the unary minus, which makes an operand negative. It is not used to subtract two numbers, as that would make it a binary operator. Example: `a = -100` uses the unary minus
-
-Basic Method Declaration
-
-```
-ReturnType operatorOP(); //.h file
-
-ReturnType Type::operatorOp(); //.cpp file 
-```
-
-- The `Op` in `operatorOp` refers to the specific operator to be overwritten. For example `operator++` overloads the increment (`++`) operator.
-- In the case that we have to return a new object from the method, we'll return the new object by value.
-- Unary member methods have an empty parameter list because the object we are working with is refered to by the `this` pointer. 
-
-
-Example for hypothetical `Number` class:
-
-```
-Number Number::operator-() const;
-Number Number::operator++(); //pre-increment
-Number Number::operator++(int); //post-increment
-bool Number::operator!() const;
-```
-
-```
-Number n1 {100};
-number n2 = -n1 // n1.operator-()
-n2 = ++n1; //n1.operator++()
-n2 = n1++; //n1.operator++(int)
-```
-
-Example for `Mystring` class that uses unary minus operator to make a string all lower case.
-
-```
-// Make lowercase
-Mystring operator-(const Mystring &obj) {
-
-	 // Create a buffer array 
-    char *buff = new char[std::strlen(obj.str) + 1];
-    std::strcpy(buff, obj.str);
-    
-    // make buffer lower case
-    for (size_t i=0; i<std::strlen(buff); i++){ 
-        buff[i] = std::tolower(buff[i]);
-    }
-    
-    // create a new object initialized with the lower case buffer
-    Mystring temp {buff};
-    delete [] buff; // Delete buffer
-    return temp; // return the new object
-}
-```
-
-- We are returning a new object that will be a lowercase deep copy of the existing object
-- `const` because we don't want to modify the current object, we want to return a new object based on the current object.
-- We need to think about whether overloading the operator to perform this function makes sense. Probably better to create a method named `to_lower()` or something like that.
-
-#### Binary Operators
-
-Binary operators are applied to two operands. These include the basic mathmatical operators (`+`, `-`, `*`, `/`, `%`), the comparison operators (`==`, `!=`, `>`, `<`, etc.), and many more
-
-- note that the `-` operator here is the binary difference operator for subtracting two values rather than the unary operator that turns a value negative 
-
-
-
-```
-ReturnType operatorOP(const Type &rhs); //.h file
-
-ReturnType Type::operatorOp(const Type &rhs); //.cpp file
-```
-
-This is the same as the syntax for returning the unary operators except we have a single parameter in the method parameter list 
-
-- This parameter is named `rhs` in this code to make sure that it is clear that it refers to the parameter on the right hand side of the operator
-	- in `a + b`, the actual method being performed is `a.operator+(b)` because `b` is on the right hand side of the `+` operator
-- The `this` pointer points to the object on the left-hand side of the operator
-- The only limitation is that the object on the left-hand side must be an object of the class you are using.
-	- For example, if you are using `+` for concatenation in the `Mystring` class.
-
-	```
-	Mystring larry {"Larry"};
-	Mystring stooges {" is one of the three stooges"};
-	Mystring result;
+class Derived : public Base {
+    using Base::Base;
+private:
+    int doubled_value;
+public:
+	// Same constructors and destructors as before
 	
-	result = larry + stooges // OK, larry.operator+(stooges)
-	result = larry + " is the best stooge"; // OK, larry.(" is also a stooge")
-	result = "Moe" + stooges // ERROR - "Moe".operator+(stooges)
-	``` 
+	Derived(const Derived &other)
+        : Base(other), doubled_value {other.doubled_value} {
+         cout << "Derived copy constructor" << endl;     
+    }
+}; 
+```
+
+
+#### Copy/Move Assignment Operator `operator=`
+
+Note: these notes are written for the Copy Assignment Operator but the Move Assignment Operator works the same way
+
+
+```
+class Base {
+	private:
+	    int value;
+	public:
+	   // Same constructors and destructors as before
+
+		Base &operator=(const Base &rhs)  {
+	   		cout << "Base operator=" << endl;
+	    
+	    	// check for self assignment
+	        if (this != &rhs){
+	            value = rhs.value;
+	        }
+	        return *this;
+	    }
+};
+
+class Derived : public Base {
+    using Base::Base;
+private:
+    int doubled_value;
+public:
+	// Same constructors and destructors as before
 	
-	- `result = larry + stooges` is okay because both `larry` and `stooges` are `Mystring` objects. 
-	- `result = larry + " is the best stooge";` is okay because `larry` is a `Mystring` object and is on the left-hand side of the operator
-	- `"Moe" + stooges` causes an error because `"Moe"` is a string literal not a `Mystring` object. Even though `stooges` is a `Mystring` object, it is on the right-hand side of the operator. The `Mystring` object needs to be on the left-hand side of the operator. `"Moe".operator+(stooges)` does not make sense.
-
-Examples:
-
-```
-Number Number::operator+(const Number &rhs) const;
-Number Number::operator-(const Number &rhs) const;
-bool Number::operator==(const Number &rhs) const;
-bool Number::operator<(const Number &rhs) const;
-```
-
-- notice that the overloaded addition and subtraction operators return the newly created sum or difference objects by value
-- The equality operators return Booleans because they are comparing things 
-- All of these take in `const` parameters because they are not modifying the initial parameter but instead returning another value based on the input
-
-
-```
-Number n1{100}, n2 {200};
-Number n3 = n1 + n2; // n1.operator+(n2)
-n3 = n1 - n2; //n1.operator-(n2)
-if (n1 == n2) ... /n1.operator==(n2)
-```
-
-Possible uses in the `Mystring` class
-
-Can use the equality operator in the `Mystring` class to check to see if the strings are equal
-
-```
-bool operator==(const Mystring &lhs, const Mystring &rhs) {
-    return (std::strcmp(lhs.str, rhs.str) == 0);
-}
-```
-
-Can use the `+` operator in the `Mystring` class for concatenation.
-
-Just make sure that however your overload the operators makes sense.
-
-### Operators as Global Functions
-
-- These are called global functions to show the contrast between member functions. These functions are not in the class.
-- Since these are not member functions, we no longer have a `this` pointer referring to the object on the left-hand side
-- We often need acess to private attributes in the objects, so you see these non-member functions declared as friend functions of the class in many applications
-	- this isn't absolutely necessary since you can still use getter methods to access attribute values
-- you cannot have both member and non-member versions of the overloaded operator at the same time because then the compiler would not know what to use
-
-#### Unary Operators as Global Functions
-
-```
-ReturnType OperatorOp(Type &obj);
-```
-
-Exmaples for a hypothetical `Number` class
-
-```
-Number operator-(const Number &obj);
-Number operator++(Number &obj); //pre-increment
-Number operator++(Number &obj, int); //post-increment
-bool operator!(const Number &obj);
-```
-
-
-- the function takes in as a parameter the object upon which the operator is acting
-
-
-```
-Number n1 {100};
-number n2 = -n1 // operator-(n1)
-n2 = ++n1; //operator++(n1)
-n2 = n1++; //operator++(n1, int)
-```
-
-#### Binary Operators as Global Functions
-
-```
-ReturnType operatorOp(const Type &lhs, const Type &rhs);
-```
-
-- The first input `&lhs` is the left-hand side object
-- The second input `&rhs` is the right-hand side object
-- These are constant inputs since we are not modifying the initial inputs. Instead, we are returning a new object based on the sum/difference/etc. of the two inputs.
-- With global functions, you do not need to have the left-hand side be a `Mystring` object. 
-	- you can have the left-hand side be a `Mystring` object, the right-hand side be a `Mystring` object, or both sides be `Mystring` objects
-	- Because both inputs are supposed to be `Mystring` objects, if you input a C-style string, then the compiler implicity converts a char to a `Mystring`.
-	- you cannot have neither input be a `Mystring` object because then the compiler won't know to call the overloaded operator for the `Mystring` class.
-	- Because both
-
-```
-Number operator+(const Number &lhs, const Number &rhs);
-Number operator-(const Number &lhs, const Number &rhs);
-bool operator==(const Number &lhs, const Number &rhs);
-bool operator<(const Number &lhs, const Number &rhs);
-```
-
-
-Exmaple: equality operator for the `Mystring` class
-
-```
-bool operator==(const Mystring &lhs, const Mystring &rhs){
-	if (std::strcmp(lhs.str, rhs.str) == 0){
-		return true;
+	Derived &operator=(const Derived &rhs) {
+			cout << "Derived operator=" << endl;
+	        if (this != &rhs){
+	        	Base::operator=(rhs); // Assign Base Part
+		     	doubled_value = rhs.doubled_value; // Assign Derived Part
+	        }
+	        return *this;
 	}
-	else{
-		return false;
-	}
-}
+}; 
 ```
 
-- if the function is declared as a friend of `Mystring`, it can access the private `str` attribute. If not, we must use getter methods.
-- Code is the same as implementation in the member method except you now have the `lhs` object instead of the `this` pointer
+`Base::operator=(rhs);` passes in the `rhs` to the `Base` class's overloaded assignment operator. If we don't explicilty make this call, then the base part will not be assigned
 
-### Overloading Stream Insertion and Extraction Operators
+#### Inhertance with Copy/Move constructors and overloaded `operator=`
 
-- makes classes look and feel more like a C++ data type
-
-It does not make sense to implment the insertion (`<<`) and extraction (`>>`) operators as member methods. Member methods require that the left operand must be a member of a user-defined class. This is not the way we normally use these operators. We usually have the operator to the left of whatever is being inserted or extracted.
-
-```
-Mystring {"Hello World"}
-cout << "Hello World" << endl;
-
-```
+- Often you do not need to provide your own
+- If you do **not** define them in `Derived`, then the compiler will create them automatically and call the base class's version
+- if you do provide `Derived` versions, then **you** must invoke the `Base` versions **explicitly** yourslef
+- Be careful with raw pointers, especially if Base and Derived each have raw pointers. 
+	- Provide them with deep copy semantics
 
 
-#### Stream Insertion Operator (`<<`)
+### Redefining Base Class Methods:
 
-```
-std::ostream &operator<<(std::ostream &os, const Mystring &obj){
-	os << obj.str // if a friend function
-	//os << obj.get_str(); // if not a friend function
-	
-	return os
-}
-```
-
-
-- The first argument (`std::ostream &os`) is an output stream object by reference
-- The second argument (`const Mystring &obj`) is a reference to the `Mystring` object whose data we want to insert in the output string. 
-	- use `const` to prevent us from modifying the data 
-- Return a reference to the `ostream` so we can keep inserting. Don't return `ostream` by value
-	- `ostream` is short for output stream 
-
-
-#### Stream Extraction Operator (`>>`)
-
-```
-std::ostream &operator<<(std::istream &is, Mystring &obj){
-	char *buff = new char[1000];
-	is >> buff;
-	obj = Mystring{buff}; //If you have copy or move assignment
-	delte [] buff;
-	return is
-}
-```
-
-- Update the object passed in
-- Return a reference to the `istream` (insertion stream)
-
-
-- The first argument (`std::istream &is`) is an input stream object by reference whose type is `istream`
-- The second argument (`Mystring &obj`) is a reference to the `Mystring` object into which we want to extract data. 
-	-  this should not be a `const` because we want to modify the object
--  We can take the data from the input stream and either store it locally or store it directly in the object
-- Return a reference to the `istream` so we can keep inserting. Don't return `istream` by value
-
-
-##### Working through the code
-
-- `char *buff = new char[1000];` - allocate a large array of characters that will hold the data we want to construct a `Mystring` object. This is created dynamically on the heap.
-- `is >> buff;` - insert the data into the newly created array
-- `obj = Mystring{buff};` - create a `Mystring` object using `buff`. This assumes you have a copy or move assignment operator defined
-- `delete [] buff;` - delete the temporary variable `buff`
-- `return is` - return a reference to the istream so we can keep inserting
+- Derived class can directly invoke base class methods 
+- derived class can override or redefine base class methods
+- Very powerful in the context of polymorphism
