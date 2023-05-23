@@ -141,6 +141,7 @@ class DerivedClass: access-specifier BaseClass{
 	- [public, private, and protected inheritance](https://www.programiz.com/cpp-programming/public-protected-private-inheritance) overview
 - `BaseClass` is the name of the base class 
 - `DerivedClass` is the name of the class derived from the base class
+- Note: generally the derived class should be less complicated than the base class
 
 Access Specifiers
 
@@ -465,4 +466,84 @@ public:
 
 - Derived class can directly invoke base class methods 
 - derived class can override or redefine base class methods
-- Very powerful in the context of polymorphism
+- Very powerful in the context of polymorphism (next section)
+
+
+To redefine or override a method, you simply provide a method in the derived class with the same name and signature as a method in the base class.
+
+- a function/method signature consists of the function/method name and the number and type of its parameters. This is essentially the same as the function prototype.
+
+#### Example:
+
+
+
+```
+// Account Class with Deposit Method
+class Account{
+protected:
+    double balance;
+public:
+	void deposit(double amount){
+		balance += amount;
+}
+```
+
+Create an `Account` class with a `deposit` method
+
+```
+class Savings_Account: public Account{
+protected:
+	double int_rate; // in percent
+public: 
+	void deposit(double amount){
+		amount = amount + (amount * int_rate/100);
+		Account:: deposit(amount);
+	}
+}
+```
+
+Going Through the Code
+
+- `class Savings_Account: public Account` creates a derived class `Savings_Account` whose base class is `Account`
+- `void deposit(double amount)` redefines the base `deposit` method for `Savings_Account` class
+	- notice that the number (1) and type (`double`) of the redefined deposit method's arguments are the same as those of the base class's deposit method. This is because the signature needs to be the same, not just the method name. 
+- `Account::deposit(amount)` calls the base class version of ther `deposit` method
+	- We want to take advantage of some of the functionality in the `Account` class's `deposit` method, so we call it here. No need to duplicate code.  
+	- Must prefix the method call with the `Account` class so the compiler knows taht we're calling the `Account` class's `deposit` method.
+
+	
+### Static Binding
+
+- Static binding means that the compiler determines which methods are called based on what it sees at compile time. 
+	- This is very efficient - default binding for C++ is static
+	- derived class objects with use `Derived::deposit`, but we can explicitly invoke `Base::deposit` from `Derived::deposit`
+	- This is okay, but limited. We sometimes want binding to occur at runtime. This is called dynamic binding
+
+
+```
+Base b // b is a Base object
+b.deposit(100.0); // Base::deposit
+
+Derived d // d is a Derived object
+d.deposit(100.0); //Derived::deposit
+
+Base *ptr = new Derived(); //This is valid because a Derived is a Base
+ptr->deposit(1000) //compiler Base::deposit, but we may actually want to call Derived::deposit
+```
+
+For `Base *ptr = new Derived();`, check out [this](https://www.geeksforgeeks.org/object-slicing-in-c/) page on Object Slicing in C++.
+
+### Multiple Inheritance in C++
+
+- Multiple Inheritance is when a derived class inherits from two or more base classes at the same time
+	- Base class may belong to unrelated hierarchies
+	- An example that could apply to our univeristy persons class hierarchy is a `Department Chair` class that inherits from the Faculty Class and the Administrator Class
+		- a department chair is a faculty member and is an administrator
+	- Has some compelling use cases
+		- we can usually change our design so we don't need it
+	- Can be very complex
+		- oftentimes this complexity causes it to be misued
+- Multiple inheritance is beyond the scope of this course. 
+	- See [this](https://www.geeksforgeeks.org/multiple-inheritance-in-c/) link for more information
+
+    

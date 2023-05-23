@@ -565,7 +565,7 @@ same as the increment operator except it decreases value by 1
 		cout << alpha << endl \\ outputs the integer 1
 		```
 		
-	- Explicit Type Casting - static_cast<type>
+	- Explicit Type Casting - `static_cast<type>`
 
 		```
 		int total_amount {100};
@@ -2238,17 +2238,17 @@ C++ allows a subset of the arrithmetic operators to work with pointer variables 
 - Can compare pointers using the `==` and `!=` operators - this only compares the values of the pointer variables, not the value of the data
 	 - two pointers will only be equal if they are pointing to the same address
 
-	 ```
-	 int x {1};
-	 int y {1};
+	```
+	int x {1};
+	int y {1};
 	 
-	 cout << (x == y) << endl; // true because x and y have the same value
+	cout << (x == y) << endl; // true because x and y have the same value
 	 
-	 int *ptrx = &x;
-	 int *ptry = &y;
+	int *ptrx = &x;
+	int *ptry = &y;
 	 
-	 cout << (*ptrx == *ptry) << endl; //true because x and y have the same value
-	 cout << (ptrx == ptry) << endl; // false because x and y have different addresses
+	cout << (*ptrx == *ptry) << endl; //true because x and y have the same value
+	cout << (ptrx == ptry) << endl; // false because x and y have different addresses
 	 
 	int *ptrz {ptrx};
 	cout << (z == ptrx) << endl; // true
@@ -2936,6 +2936,7 @@ jack.talk("Hello."); // outputs Jack says Hello.
 #### Implementing Inside Class Delcaration
 
 Example:
+
 ```
 class Account{
 
@@ -4044,7 +4045,7 @@ Class Player{
 
 - class data members can be declared as `static`
 	- tells compiler that this data membe belongs to the class, not the objects
-	- useful for storying class-wide information
+	- useful for storing class-wide information
 		- example: want to keep track of how many `Player` objects exist 
 - Class functions can be declared as static
 	- independent of any objects
