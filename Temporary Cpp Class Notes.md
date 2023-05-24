@@ -242,7 +242,7 @@ If you want to make sure that you override the function, add the `override` keyw
 class Derived: public Base {
 public:
     virtual void say_hello() override;
-    virtual ~Derived() {}
+    virtual ~Derived() {};
 };
 ```
 
