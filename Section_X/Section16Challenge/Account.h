@@ -18,6 +18,7 @@ public:
 
     virtual bool deposit(double amount) = 0;
     virtual bool withdraw(double amount) = 0;
+    std::string get_name() const;
     
 };
 #endif

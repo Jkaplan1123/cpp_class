@@ -22,3 +22,7 @@ bool Account::withdraw(double amount) {
         return false;
     }
 }
+
+std::string Account::get_name() const{
+    return name;
+}
