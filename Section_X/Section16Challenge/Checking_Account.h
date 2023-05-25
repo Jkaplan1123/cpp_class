@@ -13,10 +13,13 @@ private:
 protected:
     double per_check_fee;
 public:
-    Checking_Account(std::string name = def_name, double balance = def_balance, double per_check_fee = def_per_check_fee);    
+    Checking_Account(std::string name = def_name, double balance = def_balance, double per_check_fee = def_per_check_fee);
+    virtual ~Checking_Account() = default; // virtual destructor
+        
     virtual bool withdraw(double amount) override;
     virtual bool deposit(double amount) override;
-    virtual ~Checking_Account() = default; // virtual destructor
+    virtual void print(std::ostream &os) const override;
+    
 };
 
 #endif // _CHECKING_ACCOUNT_H_

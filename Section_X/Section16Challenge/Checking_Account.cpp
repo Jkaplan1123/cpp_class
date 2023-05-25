@@ -13,8 +13,7 @@ bool Checking_Account::deposit(double amount){
     return Account::deposit(amount); //not sure if I can use a pure virtual function this way
 }
 
-std::ostream &operator<<(std::ostream &os, const Checking_Account &account) {
-    os << "[Checking_Account: " << account.name << ": " << account.balance  << "]";
-    return os;
+void Checking_Account::print(std::ostream &os) const{
+    os << "[Checking Account: " << name << ", Balance: $" << balance << ", Withdraw Fee: $" << per_check_fee << "]";
 }
 

@@ -17,8 +17,8 @@ bool Savings_Account::withdraw(double amount){
     return Account::withdraw(amount);
 }
 
-std::ostream &operator<<(std::ostream &os, const Savings_Account &account) {
-    os << "[Savings_Account: " << account.name << ": " << account.balance << ", " << account.int_rate << "]";
-    return os;
+void Savings_Account::print(std::ostream &os) const {
+    os.precision(2);
+    os << std::fixed;
+    os << "[Savings Account: " << name << ": $" << balance << ", interest rate:" << int_rate << "%]";
 }
-
