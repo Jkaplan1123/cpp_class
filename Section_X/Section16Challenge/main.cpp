@@ -10,21 +10,15 @@
 
 using namespace std; 
 
+
+void reference_display (Account const &account){
+    cout << account << endl;
+}
+
 int main() {
     cout.precision(2);
     cout << fixed;
    
-    // // Accounts
-    // vector<Account> accounts;
-    // accounts.push_back(Account {});
-    // accounts.push_back(Account {"Larry"});
-    // accounts.push_back(Account {"Moe", 2000} );
-    // accounts.push_back(Account {"Curly", 5000} );
-    
-    // display(accounts);
-    // deposit(accounts, 1000);
-    // withdraw(accounts,2000);
-    
     // Savings 
 
     Savings_Account superman {"Superman"};
@@ -54,8 +48,7 @@ int main() {
     deposit(check_accounts, 1000);
     withdraw(check_accounts, 2000);
 
-    // Trust
-
+    // Trust - using pointers
     Account *jack = new Trust_Account ("Jack", 10000, 5.0);
     Account *layne = new Trust_Account("Layne", 20000, 4.0);
     Account *glynn = new Trust_Account("Glynn", 30000);
@@ -78,7 +71,7 @@ int main() {
     delete jack;
     delete layne;
     delete glynn;
-
+    
     Account *p1 = new Checking_Account("Larry", 10000);
     Account *p2 = new Savings_Account("Moe", 1000);
     Account *p3 = new Trust_Account("Curly"); 
@@ -95,8 +88,12 @@ int main() {
     delete p2;
     delete p3;
 
-    // vector <Account> regular_objects {wonderwoman, scotty, Trust_Account {"Jack", 10000, 5.0}};
-
+    // Try out passing in regular objects (not pointers) to a function using
+    // base class references
+    cout << "\nTry using Base Class Reference:" << endl;
+    reference_display(wonderwoman);
+    reference_display(kirk);
+    reference_display(Trust_Account {"Jack"});
     
     return 0;
 }
