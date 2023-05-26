@@ -5457,8 +5457,6 @@ for (auto i=0; i < 4; i++){
 	- This makes the method a virtual function, which means it can be overridden in derived classes and bound dynamically at runtime when we use a base class pointer or reference.		 
 - Virtual functions are virtual all the way down the hierarchy from this point
 - Dynamic polymorphism only via `Account` class pointer or reference
-	- we will not get dynamic polymorphism if we create a `Savings` class pointer and try to use with trust: 
-	- `Savings *ptr = new Trust();` does not allow for dynamic polymorphism the way `Account *ptr = new Trust();` does
 
 ##### Declaring Virtual Function Example
 
