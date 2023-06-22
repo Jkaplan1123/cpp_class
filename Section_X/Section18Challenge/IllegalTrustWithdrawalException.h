@@ -1,6 +1,6 @@
 #ifndef __ILLEGAL_TRUST_WITHDRAWAL_EXCEPTION_H__
 #define __ILLEGAL_TRUST_WITHDRAWAL_EXCEPTION_H__
-#include <exception>
+// #include <exception>
 
 class IllegalTrustWithdrawalException : public std::exception
 {
