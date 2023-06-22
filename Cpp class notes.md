@@ -1,5 +1,9 @@
 # C++ Class Notes
 
+## Useful Resources
+
+- [C++ Core Guidelines](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#S-errors): a set of tried-and-trude guidelines, rules, and best practrices about coding in C++
+
 ## Section 5 - Structure of a C++ Program
 
 ### Syntax Terms
