@@ -1,0 +1,91 @@
+## VS Code
+# https://github.com/github/gitignore/blob/4488915eec0b3a45b5c63ead28f286819c0917de/Global/VisualStudioCode.gitignore
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+## C++
+# https://github.com/github/gitignore/blob/4488915eec0b3a45b5c63ead28f286819c0917de/C++.gitignore
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+## Codelite
+# https://github.com/eranif/codelite/blob/7adebb06e2b3ab1f464446842a9680da055c50c3/.gitignore
+
+/build-release/
+*.mk
+*.dll
+*.exe
+.codelite/
+*.xrc
+*.txt
+!Description.txt 
+!CMakeLists.txt
+*.gch
+.clangd/
+*.a
+tags
+Makefile
+build-Debug/
+build-Win*/
+Debug/
+Release/
+build-Debug*/
+*build-debug*/
+build-*release*/
+build-*debug*/
+.cache/
+ctags/
+.ctagsd/
+compile_commands.json
+compile_flags.txt
+wxcrafter/src/wxcversion.cpp
+LiteEditor/autoversion.h
+
+## Notes to self
+# I added !Description.txt  
+
+## Other (Mac ?)
+*.dSYM
+*.DS_Store
