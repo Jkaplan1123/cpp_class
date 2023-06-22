@@ -5,6 +5,7 @@
 #include <string>
 #include "I_Printable.h"
 #include "IllegalBalanceException.h"
+#include "InsufficientFundsException.h"
 
 class Account : public I_Printable {
 private:   
@@ -16,8 +17,12 @@ protected:
 public:
     Account(std::string name = def_name, double balance = def_balance);
     virtual bool deposit(double amount) = 0;
-    virtual bool withdraw(double amount) = 0;
+    virtual void withdraw(double amount) = 0;
     virtual void print(std::ostream &os) const override;
     virtual ~Account() = default;
+
+    double get_balance();
+    std::string get_name();
 };
+
 #endif

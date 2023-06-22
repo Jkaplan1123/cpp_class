@@ -13,12 +13,12 @@ bool Trust_Account::deposit(double amount) {
 }
     
 // Only allowed 3 withdrawals, each can be up to a maximum of 20% of the account's value
-bool Trust_Account::withdraw(double amount) {
+void Trust_Account::withdraw(double amount) {
     if (num_withdrawals >= max_withdrawals || (amount > balance * max_withdraw_percent))
-        return false;
+        throw IllegalTrustWithdrawalException();
     else {
         ++num_withdrawals;
-        return Savings_Account::withdraw(amount);
+        Savings_Account::withdraw(amount);
     }
 }
 

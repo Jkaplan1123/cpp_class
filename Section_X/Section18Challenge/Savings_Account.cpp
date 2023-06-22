@@ -13,8 +13,8 @@ bool Savings_Account::deposit(double amount) {
     return Account::deposit(amount);
 }
 
-bool Savings_Account::withdraw(double amount) {
-    return Account::withdraw(amount);
+void Savings_Account::withdraw(double amount) {
+    Account::withdraw(amount);
 }
 
 

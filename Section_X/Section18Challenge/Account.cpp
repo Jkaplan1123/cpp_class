@@ -15,16 +15,26 @@ bool Account::deposit(double amount) {
     }
 }
 
-bool Account::withdraw(double amount) {
+void Account::withdraw(double amount) {
     if (balance-amount >=0) {
         balance-=amount;
-        return true;
-    } else
-        return false;
+    }
+    else{
+        throw InsufficientFundsException();
+    }
 }
 
  void Account::print(std::ostream &os) const {
     os.precision(2);
     os << std::fixed;
     os << "[Account: " << name << ": " << balance << "]";
+}
+
+double Account::get_balance()
+{
+    return balance;
+}
+
+std::string Account::get_name(){
+    return name;
 }
