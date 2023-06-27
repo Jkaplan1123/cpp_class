@@ -59,8 +59,8 @@
 *.exe
 .codelite/
 *.xrc
-*.txt
-!Description.txt 
+# *.txt
+# !Description.txt 
 !CMakeLists.txt
 *.gch
 .clangd/
@@ -83,6 +83,9 @@ compile_flags.txt
 wxcrafter/src/wxcversion.cpp
 LiteEditor/autoversion.h
 
+# !Class_Source_Code/Section19/WriteFIle_1
+# !Class_Source_Code/Section19/WriteFIle_2
+
 ## Notes to self
 # I added !Description.txt  
 
@@ -92,3 +95,4 @@ LiteEditor/autoversion.h
 Section_X/Section18Challenge/main
 Section_X/Section17Challenge/main
 Section_X/Section16Challenge/main
+Section_X/Section19Challenge/Challenge1/main
