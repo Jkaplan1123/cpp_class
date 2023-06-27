@@ -1,364 +1,372 @@
-## Section 18 - Exception Handling
-
-### Basic Concepts
-
-Note: exceptions in C++ should only be used for synchronous code (as opposed to asynchronous code) 
-
-[C++ Exception Handling Website](https://www.tutorialspoint.com/cplusplus/cpp_exceptions_handling.htm#:~:text=A%20C%2B%2B%20exception%20is%20a,try%2C%20catch%2C%20and%20throw)
-
-- use exceptions to check error conditions that may occur at run time even if your code is correct
-	- always check arguments to public functions by using exceptions 
-
-#### Background
-
-- Exception Handling deals with extraordinary situations
-	- it indicates that an extraordinary situation has been detected or has occurred
-	- it allows the program to deal with these extraordinary situations in a suitable manner
-		- "suitable manner" depends on the program and application. In some cases, we can recover and continue. In other cases, we may have to terminate the program.
-			- For example, if you are supposed to log data to a file but that file doesn't exist, your code can either (a) error out and end the program or (b) create a new file and start logging to that one
-- Examples of what can cause an exception: insufficient resources, invalid operations, range violations, underflows and overflows, illegal data, etc.
-- Exception safe - when your code handles exceptions
+## Section 19 - I/O and Streams
 
 
-#### Terminology
+### Files, Streams, and Input/Output (I/O)
 
-- **Exception**: an object or primitive type that signals that an error has occured
-	- this exception object often contains information about what happened 
-- **Throwing/Raising an Exception**: this is the part of the code that detects that an error has occurred or will occur
-	- This place where the error occured may not know how to handle the error
-	- Code can throw an exception describing the error to another part of the program that knows how to handle the error
-- **Catching/Handliing the Exception**: this is the part of the code that handles the exception
-	- this may be the same part of the code that raised the exception but is usually a different part of the program.
+- C++ uses streams as an interface between the program and input and output devices
+	- These devices may be physical (e.g. hard disk) or virtual (e.g. a web service)
+-  These streams are independent of the actual device
+-  A stream is a sequence of bytes
+-  C++ provides different types of streams depending on if we want input or output, but there are also streams that do both
+	-  An input stream provides data to the program
+	-  An output stream receives data from the program 
 
-#### Exception Handling Syntax
+#### Common header files for working iwth stream I/O
 
-- `throw`
-	- throws an exception
-	- followed by an argument - the exception that we are throwing
-	- best practice is to throw objects, not primitives
-- `try {try block}`
-	- you place code that may throw an exception in the `try block`
-	- if there is no exception then the code executes as normal
-	- if the code throws an exception then the try block is exited. The thrown exception is handled by a catch handler.
-		- if no catch handler exists for that particular exception then the program terminates
-- Catch handler `catch (Exception ex) {catch block}`
-	- A catch handler handles the exception of type `Exception` and value `ex`
-	- `catch block` is the block of code that handles the exception
-		- only executes if an exception is thrown and the type of the thrown exception matches the parameter in the catch block 
-		- may or may not cause the program to terminate  
-	- can write multiple catch handlers to handle different types of exceptions
-
-	
-- Best practices is to throw by value and catch by reference
-- We cannot have a catch block without a try block - the compiler needs to know where an exception might occur in order to set up the code to catch it
-	- corollary: any try block must have a catch block
+| Header File | Description                                                              |
+|-------------|--------------------------------------------------------------------------|
+| `iostream`  | Provides definitions for formatted input and output from/to streams      |
+| `fstream`   | Provides definitions for formatted input and output from/to file streams |
+| `iomanip`   | Provides definitions for manipulators used to format I/O streams in specific ways         |
 
 
-#### Example: Divide by Zero
+#### Commonly used stream classes
+
+| Class          | Description                                                                                                             |
+|----------------|-------------------------------------------------------------------------------------------------------------------------|
+| `ios`          | Provides basic support for formatted and unformatted I/O operations. It is the base class of most other classes.        |
+| `ifstream`     | Provides for high-level input operations on file based streams. (i.e. from files)                                                        |
+| `ofstream`     | Provides for high-level output operations on file based streams. (i.e. from files)                                                   |
+| `stream`       | Provides for high-level I/O operations on file based streams. It is derived from `ofstream` and `ifstream`.             |
+| `stringstream` | Provides for high level I/O operations on memory based strings. It is derived from `istreamstream` and `ostringstream`. |
+
+#### Global stream objects
+
+| Object | Description                                                                                                                         |
+|--------|-------------------------------------------------------------------------------------------------------------------------------------|
+| `cin`  | Standard input stream - by default "connected" to the standard input device (keyboard). It is an instance of `istream` class.             |
+| `cout` | Standard output stream - by default "connected" to the standard output device (console). It is an instance of `ostream` class.            |
+| `cerr` | Standard error stream - by default "connected" to the standard error device (console). It is an instance of `ostream` (unbuffered). |
+| `clog` | Standard log stream - by default "connected" to the standard log device (console). It is an instance of `ostream` (unbuffered).     |
+
+- Global objects - initialized before main executes
+- `cin` and `cout` are buffered streams
+	- input from `cin` won't be automatic until the user presses enter
+	- output to `cout` occurs only when the stream buffer fills out, we provide an `std::endl`, or we flush the stream.
+- best practices is to use `cerr` for error messages and `clog` for log messages
+- `cerr` and `clog` are unbuffered - we get input or output from them as we need it.
+- we used the `ostream` class when overriding the insert operator 
+- we can redirect I/O to make input come from a file or output go to a file
+
+
+### Stream Manipulators
+
+- streams have useful member functions to control formatting
+- can be used on input or output streams - formatting output is much more common
+- the time of the effect on the stream varies - sometimes will be set for whole program, sometimes only impact the next object on the stream, sometimes their effect is immediate
+- Can be used as a member method that you use with a stream object or as a manipulator function
+	- `std::cout.width(10);` is a member method being used on the stream object `cout`
+	- `std::cout << std::setw(10);` is a manipulator version - set to be used inline as a stream insertion. This overloads the insertion operator
+	- To use manipulators you must include `iomanip`
+	- We will focus on manipulator usage
+
+#### Boolean Formatters
+
+- we are using `cout` in these examples but any output streams will work
+
+The default when displaying boolean values is `1` or `0` but sometimes the strings `true` or `false` are more appropriate. We can use stream manipulators to tell our output strings to dipslay `0`/`1` or `false`/`true`, depending on which we want.
+
+Note: with boolean formatting, all further boolean output will be affected
+
+##### Stream Insertion Mode
+
+The default is to display booleans as the integers `1` (for true)`0` (for false).
 
 ```
-int miles {};
-int gallons {};
-double miles_per_gallon {};
+std::cout << (10 == 10) << std::endl; //displays 1
+std::cout << (10 == 20) << std::endl; //displays 0
+```
+
+We can use `std::boolalpha` as a stream insertion operator to display booleans as the strings `true` or `false`. 
+
+```
+std::cout << std::boolalpha; 
+
+std::cout << (10 == 10) << std::endl; //displays true
+std::cout << (10 == 20) << std::endl; //displays false
+```
+
+With boolean formatting, all futehr boolean output will be affected. To go back to  displaying `0` and `1`, we use `std::noboolalpha`
+
+```
+std::cout << std::noboolalpha;
+
+std::cout << (10 == 10) << std::endl; //displays 1
+std::cout << (10 == 20) << std::endl; //displays 0
+```
+
+##### Method Version
+
+We can set the format of boolean types using the `setf` method.
+
+- `std::cout.setf(std::ios::boolalpha)` is the same as the `std::boolalpha` insertion operator.
+- `std::cout.setf(std::ios::noboolalpha)` is the same as the `std::noboolalpha` insertion operator.
+- To reset to default, use the `resetiosflags` method
+	- `std::cout << std::resetiosflags(std::ios::boolalpha)` 
+
+#### Integer Formatters
+
+- integers have four basic formatting option:
+	-  base: base 10 decimal (`dec`), base 8 octal (`oct`), base 16 hexadecimal (`hex`)
+	- `noshowbase`/`showbase`- determines if a prefix will be displayed to clarify is a number is decimal, octal, or hexadecimal
+		- the prefix for a hex number is `0x` and the prefix for an octal number is `0` 
+		- if `showbase`, the number will consist of the appropriate prefix followed by the rest of the number in the appropriate base. 
+			- For example, the number 10 will be desplayed as 10 in decimal, 012 in octal, and 0xa in hexidecimal
+	- `uppercase`/`nouppercase` - determines if the letter prefix and hex values will be lower or upper case
+	- `showpos`/`noshowpos` - determines if a `+` will be displayed for positive numbers
+- the default for displaying integer values is: `dec`, `noshowbase`, `nouppercase`, `noshowpos`
+- integer stream manipulators affect all further output to the stream
+
+
+
+```
+int num {255};
+
+std::cout << std::dec << num << std::endl; // displays 255
+std::cout << std::hex << num << std::endl; // displays ff
+std::cout << std::oct << num << std::endl; // displays 377
+```
+
+All three numbers have the same value but display as `255` for decimal, `ff` for hexadecimal, and `377` for octal. You can see why the prefix may be important to prevent confusion
+
+```
+int num {255};
+
+std::cout << std::showbase;
+std::cout << std::dec << num << std::endl; // displays 255
+std::cout << std::hex << num << std::endl; // displays 0xff
+std::cout << std::oct << num << std::endl; // displays 0377
+```
+
+Toggling on `showbase` changes the outputs to `255` for decimal, `0xff` for hexadecimal, and `0377` for octal. The prefix can help carify any confusion.
+
+
+You can also use the `setf` method to change these settings and use the `resetiosflags` to reset the flags to the default
+
+#### Floating Point Numbers
+
+- `setprecision` - the number of digits displayed (i.e. the number of significant figures)
+	- the floating point number is rounded to the nth digit
+	- e.g. if you are displaying 6 digits then the number `1234.5678` will display as `1234.57` even though the value is still stored without rounding
+	- if c++ can't display the number in the given amount of significace, then it will use scientific notation (e.g. `123456789.987` will display as `1.23457e+008`)
+- `fixed`/`scientific`/`hexfloat`/`defaultfloat` - not fixed to a specific 
+	- [Documentation](https://en.cppreference.com/w/cpp/io/manip/fixed) 
+	- when you use the `fixed` manipulator, precision is handled differently. In this case the precision refers not to the total number of digits but instead to the number of digits to the right of the decimal point.
+- `showpoint`/`noshowpoint` - controls whether the decimal point is always included in floating point representation
+	- `noshowpoint` removes trailing zeros to the right of the decimal point. A floating point representation of a whole number will not have a decimal point. 
+- `uppercase`/`nouppercase` - controls whether uppercase characters are used when displaying in scientific notation
+- `showpos`/`noshowpos` - determines if a `+` will be displayed for positive numbers
+
+
+- The default for displaying floating point values is
+	- `setprecision` is set to 6 digits
+	- `defaultfloat` - no fixed set number of digits to the right of the decimal point
+	- `noshowpoint`
+	- `nouppercase`
+	- `noshowpos`
+
+- To reset the floating point format back to the general format:
+	- `unsetf` method
+	- `ios` manipulator
+
+#### Align and Fill
+
+- formatting options what work with any type of data
+
+- field width (`setw`) - changes the width of the next input/output field
+	- not set by default
+	- to return to default use `setw(0)`
+	- applies only to the next data item 
+- justification (`internal`/`left`/`right`) - sets the placement of fill characters
+	- default is `left` when no field width set, `right` when using field width 
+	- `internal` only applies to integer, floating point, and monetary output
+	- justification will only be used if associated with a set width manipulator
+	- it is reccomended to use both the field width and justification manipulators together for clarity's sake
+
+```
+double num {1234.5678};
+std::string hello{"Hello"};
+
+std::cout << std::setw(10) 
+			<< std::left
+			<< num  //only affects num
+			<< hello << std::endl;
+```
+
+- fill (`setfill`) - specify the fill character
+	- not set by default, blank space is used
+	- only works when an output has a field width associated with it. The fill character fills all the empty spaces not taken up by the output
+	- this is persistant
+
+### Reading from a text file
+
+`fstream` and `ifstream` are commonly used for input files
+
+1. `#include <fstream>`
+2. Declare an `fstream` or `ifstream` object
+3. connect it to a file on your file system - opens it for reading
+4. read data from the file via the stream
+5. close the stream (close the file)
+
+
+#### Declaring an `fstream` of `ifstream` object and connect it to a file on your file system
+
+```
+std::fstream in_file {".../path/to/myfile.txt,
+							std::ios::in};
+							
+std::fstream in_file {".../path/to/myfile.txt,
+					  std::ios::in | std::ios::binary};
+```
+
+The initializer takes two arguments. The first specifies the name of the file. The file name is very OS-specific and IDE-specific. We are assuming in this code that the file exists and is where it is supposed to be.
+
+The second parameters specifies the mode and anoy other properties of the file that is being opened. We are using `std::os::in`, which opens the file in input mode. This allows us to read from the file but no write to it. By default, files are opened in text mode. The first example is opening the file in text mode. The second example is opening the file in binary mode. Binary mode is necessary for reading non-text files that contain binary data.
+
+The `fstream` class allows you to open a file for both input and output. If you are only opening for input, it is more common to use the `ifstream` class.
+
+We create an `ifstream` object the same way we create an `fstream` object.
+
+```
+std::fstream in_file {".../path/to/myfile.txt,
+							std::ios::in};
+
+std::fstream in_file {".../path/to/myfile.txt}
+```
+
+The `std::ios::in` is optional because it is already the default, so the first two declarations have the same effect. 
+
+
+Often we do not know the input file at compile time and we have to get it from the user or from some other source at runtime. 
+
+```
+std::ifstream in_file; // declare the stream object
+std::string filename;
+std::cin >> filename; // get the file name
+```
+
+Once we have the file name, we can use it with the open method on the stream object to open the file
+
+```
+in_file.open(filename);
+//or 
+in_file.open(filename, std::ios::binary); //if binary
+```
+
+
+We need to sure that we succesfully opened the file before we start reading from the file. There are a few ways to approach that.
+
+The `is_open` method will return a boolean indicating whether the file is open for processing or not.
+
+```
+if (in_file.is_open()){
+	// read from file
+}
+else {
+	// file could not be opened 
+	// or we cannot read from it
+	// handle this however you want
+}
+```
+
+We can test the stream object itself. If it could not open the file then it will return `false`
+
+```
+if (in_file){
+	// read from file
+}
+else {
+	// file could not be opened 
+	// or we cannot read from it
+	// handle this however you want
+}
+```
+
+#### Closing a File
+
+Always close any open files to flush out any unwritten data
+
+```
+in_file.close()
+```
+
+#### Reading from a file
+
+There are many ways to read from a file. 
+
+We can use the extraction operator (`>>`) to read from formatted text files the same way we used it with `cin` to get input from the keyboard.
+
+
+Suppose we have an integer, a double, and a string in a text file and we want to read these into our program.
+
+Text File:
+
+```
+100
+255.67
+Larry
+```
+
+Assume we have created `in_file` successfully. We can read from the file using `>>`
+
+```
+int num {};
+double total {};
+std::string name {};
+
+in_file >> num;
+in_file >> total >> name;
+```
+
+
+Sometimes we want to read files an entire line at a time. The extraction operators will stop when they see any white space. Therefore we can use `getline` to read the file one line at a time.
+
+Text file:
+
+```
+This is a line
+```
+
+Source code:
+
+```
+std::string line {};
+std::getline(in_file, line);
+```
+
+We can use loops to read all the lines of text in a file.
+
+```
+// assume the program is in main() and all the 
+// appropriate packages are installed 
+
+in_file.open("../poem.txt"); // open file
+if (!in_file) {
+    std::cerr << "Problem opening file" << std::endl;
+    return 1; // exit the program (main)
+}
+std::string line{};
+while (!in_file.eof()) { // while not at the end
+	 std::getline(in_file, line); // read a line
+    std::cout << line << std::endl; // display the line
+}
     
-std::cout << "Enter the miles driven: ";
-std::cin >> miles;
-std::cout << "Enter the gallons used: ";
-std::cin >> gallons;
-    
-try {
-    if (gallons == 0){
-        throw 0; // throw exception
-    }
-    miles_per_gallon = static_cast<double>(miles) / gallons;
-    std::cout << "Result: " << miles_per_gallon << std::endl;
-}
-
-// 
-catch (int &ex) {
-    std::cerr << "Sorry, you can't divide by zero" << std::endl;
-}
-std::cout << "Bye" << std::endl;
-```
-
-### Throwing an Exception from a Function
-
-- If you throw an execption in a function, C++ will try to find a handler that can handle that type of exception
-- If that exception handler exists, it must be in one of the functions on the call stack that called this function
-- The type of the exception that you throw does not have to be the same type that the function is supposed to return
-#### Miles per Gallon Function Example
-
-```
-double calculate_mpg(int miles, int gallons) {
-    if (gallons == 0){
-        throw 0;
-    }
-    return static_cast<double>(miles) / gallons;
-}
-
-int main() {    
-    int miles {};
-    int gallons {};
-    double miles_per_gallon {};   
-    
-    std::cout << "Enter the miles: ";
-    std::cin >> miles;
-    std::cout << "Enter the gallons: ";
-    std::cin >> gallons;
-    
-    // Try block
-    try {
-        miles_per_gallon = calculate_mpg(miles, gallons);
-        std::cout << "Result: " << miles_per_gallon << std::endl;
-    }
-    
-    // Catch handler 
-    catch (int &ex) {
-        std::cerr << "Tried to divide by zero" << std::endl;
-    }
-    std::cout << "Bye" << std::endl;
-
-    return 0;
-}
-
+in_file.close(); // close the file
 
 ```
 
-### Handling Mulitple Exceptions
-
-Many functions can fail in multiple ways. For example, the miles per gallon calculator does not return a logical result if: `gallons` is 0, `gallons` is negative, or `miles` is negative. We need to check for each of these and throw an exception if they occur.
-
-You can have a catch all handler that fires not matter which type of exception is throw. Typically this used as the last catch block to catch any exceptions that your previous catch handlers missed. The syntax is `catch (...)` with the `...` being the parameter list for the 
-
-- you don't have access to the exception object thrown in this case, but you can deal with the exception in the body of the catch-all block 
-
+We can write the while loop differently:
 
 ```
-#include <iostream>
-#include <string>
-
-double calculate_mpg(int miles, int gallons) {
-    if (gallons == 0)
-        throw 0;
-    if (miles <0 || gallons < 0)
-        throw std::string{"Negative value error"};
-    return static_cast<double>(miles) / gallons;
-}
-
-int main() {    
-    int miles {};
-    int gallons {};
-    double miles_per_gallon {};   
-    
-    std::cout << "Enter the miles: ";
-    std::cin >> miles;
-    std::cout << "Enter the gallons: ";
-    std::cin >> gallons;
-    try {
-        miles_per_gallon = calculate_mpg(miles, gallons);
-        std::cout << "Result: " << miles_per_gallon << std::endl;
-    }
-    
-    catch (int &ex) {
-        std::cerr << "Tried to divide by zero" << std::endl;
-    }
-    catch (std::string &ex) {
-        std::cerr << ex << std::endl;
-    }
-    std::cout << "Bye" << std::endl;
-
-    return 0;
+while (std::getline(in_file, line)) { //read a line
+    std::cout << line << std::endl; // display the line
 }
 ```
 
-Notice how this code has two different catch handlers, one for each exception type. If C++ encounters an execption that we do not have a handler for, the code will terminate. We could also add a catch all handler if we want. The syntax for that would be:
+Since the statements only return a true value when the read was successful, when we reach the end of the file or some other error condition is encountered, they will return `false` and the loop will terminate. 
 
-```
-catch (...) {
-	std::cerr << "Unknown Exception Thrown" << std::endl;
-}
-```
-
-### Stack Unwinding
-
-- If an exception is thrown but not caught in the current scope (e.g. function, loop), C++ tries to find a handler for the exception by unwinding the stack
-- For example: an exception is thrown in a function but not caught in that function
-	- the function terminates (does not return) and is removed from the call stack
-	- If a try block was used (i.e. if the function was called in a try block) then the catch blocks are checked for a match
-	- If no try block was used OR if the catch handler doesn't match, then the stack unwinding occurs again
-	- If the stack is unwound back to main and no catch handler handles the execption then the program terminates
-
-- Remember that when a function is removed from (or popped off) the stack, all of its local variables are destroyed. 
-	- This means that destructors are called for local objects
-	- If we have free memory to delete then these `delete` statements may not execute and we will leak memory
-	- This makes it critical that you implement classes that require resources as RAII classes (see smart pointers section)
-	- Make sure to clean up your resources and destructors since you never know when they may be called
-
-### Creating User-Defined Exception Classes
-
-- We can create exception classes and throw instances of those classes
-- Best practices for exceptions:
-	- throw an object, not a primitive type
-	- throw an (exception) object by value
-	- catch an (exception) object by reference (or `const` reference)
+- We can also read a file one character at a time using the `get` method.
+	- the characters come in unformatted 
 
 
-#### Miles per Gallon Example:
-
-##### Create the exception classes
-```
-class DivideByZeroException {
-};
-
-class NegativeValueException {
-};
-```
-
-For this example, we are not putting any information about the exceptions in these classes. 
-
-##### Throw those exceptions when needed in `calculate_mpg`
-
-```
-double calculate_mpg(int miles, int gallons) {
-    if (gallons == 0)
-        throw DivideByZeroException();
-    else if (miles < 0 || gallons < 0)
-        throw NegativeValueException();
-    return static_cast<double>(miles) / gallons;
-}
-```
-
-This code throws a `DivideByZeroException` if you attempt to divide by zero and throws a `NegativeValueException` if either miles or gallons are negative.
-
-##### Catch those exepctions in `main`
-
-###### Set up the program
-```
-int main() {    
-    int miles {};
-    int gallons {};
-    double miles_per_gallon {};   
-    
-    std::cout << "Enter the miles: ";
-    std::cin >> miles;
-    std::cout << "Enter the gallons: ";
-    std::cin >> gallons;
-```
-
-###### Call `miles_per_gallon` in a try block
-```    
-    try {
-        miles_per_gallon = calculate_mpg(miles, gallons);
-        std::cout << "Result: " << miles_per_gallon << std::endl;
-    }
-```
-
-###### Two catch handlers - one for each exception type
-```    
-    catch (const DivideByZeroException &ex) {
-        std::cerr << "Sorry, you can't divide by zero" << std::endl;
-    }
-    catch (const NegativeValueException &ex) {
-        std::cerr << "Sorry, one of your parameters is negative" << std::endl;
-    }
-```
-
-Notice that we are catching the exceptions by `const` reference
-
-
-###### Terminate Function
-
-```
-    std::cout << "Bye" << std::endl;
-
-    return 0;
-}
-```
-
-### Class Level Exceptions
-
-- Exceptions can be thrown from within a class in its methods, constructor, or destructor
-
-#### Methods
-
-Exceptions called in class methods work the same way as they do for functions
-
-#### Constructors 
-	
-- constructors may fail and because constructors do not return values, we cannot return a Boolean or an error code
-	- constructors may fail for many reasons (e.g. a constructor may try to open a file that does not exist)
-- When a constructor fails and you cannot initialize an object, the constructor should throw an exception 
-
-##### Constructor Exception Example
-
-- Assume we have an `Account` class and we do not allow accounts with negative balances.
-- Assume we have created an `IllegalBalanceException` class
-
-```
-Account::Account(std::string name, double balance) : name{name}, balance{balance} {
-
-	if (balance < 0.0){
-		throw IllegalBalanceException{};
-	}
-}
-```
-
-This constructor throws an `IllegalBalanceException` if we try to create an account with a negative balance
-
-```
-try {
-	std::unique_ptr<Account> moes_account = std::make_unique<Checking_Account>("Moe", -10.0);
-	std::cout << *moes_account << std::endl;
-    }
-    
-catch (const IllegalBalanceException &ex){
-	std::cerr << "Couldn't create account - negative balance" << std::endl;
-}
-```
-
-
-#### Destructor
-
-- Do **NOT** throw exceptions from your destructor
-	- a destructor in C++ is marked by default as *no except* (it does not throw exceptions) 
-	- If a destructor is called as the result of an exception and then the destructor itself throws an exception, then the original catch block (for the first exception) will never be reached - this is bad
-	- The only time a destructor may throw an exception is if it also handles the exception, but this is very unlikely
-
-### C++ Standard Exception Class Hierarchy
-
-- C++ provides a class hierarchy of exception classes
-- `std::exception` is the base class ([Documentation](https://en.cppreference.com/w/cpp/error/exception))
-	- has a virtual function `what()` 
-- all subclasses implement the `what()` virtual function
-	- `what` returns a C-style string with a description of the exception that occured
-	-  each subclass implements `what()` so that it displays whatever exception message we want
-- We can create our own user-defined subclasses of `std::exception` 
-
-```
-virtual const char *what() const noexcept
-```
-
-The `noexcept` keyword tells the compiler that this method will not throw an exception.
-
-- in case it isn't obvious, this means that you should not throw exceptions from any methods with the `noexcept` keyword
-- If you do throw an exception from a `noexcept` method, the program will terminate and the exception will not be handled
-- The destructor is `noexcept` by default. 
-
-
-#### MPG Example 
-
-```
-class DivideByZeroException : public std::runtime_error  {
-public:
-    DivideByZeroException() : std::runtime_error {"Cannot divide by zero"}
-    {}
-};
-
-
-class NegativeValueException : public std::runtime_error {
-public:
-    NegativeValueException() : std::runtime_error {"one of your parameters is negative"}
-    {}
-};
-```
-
+For now, it is reccomended that you keep `.txt` files in the same folder as the `.cpp` file 
