@@ -370,3 +370,223 @@ Since the statements only return a true value when the read was successful, when
 
 
 For now, it is reccomended that you keep `.txt` files in the same folder as the `.cpp` file 
+
+### Writing to a Text File
+
+`fstream` and `ofstream` are commonly used for output files
+
+1. `#include <fstream>`
+2. Declare an `fstream` or `ofstream` object
+3. Connect it to a file on your file system
+4. Write data to the file via the stream
+5. Close the stream and the file
+
+- By default, output files will be created if they don't exist. 
+- If we provide a path along with the file name, then we must make sure that path exists. If it does not exist then we will get an error when creating the file. 
+- If the file already exists then it will be overwritten or truncated unless we specify that we want to append to the contents of the existing file
+- We can write in text more or in binary mode
+
+Creating an output file object using `fstream` is very similar to creating an input file object using `fstream`. `fstream` can be used to read and write from the same file.
+
+```
+std::fstream out_file {".../path/to/file", std::ios::out}
+```
+
+The `ofstream` class is exculusivley for output files. Creating an output file object using the `ofstream` class is similar to creating an input file object using `ifstream`.
+
+```
+std::ofstream out_file {".../path/to/file.txt", std::ios::out}
+
+std::ofstream out_file {".../path/to/file.txt"}
+```
+
+Because `ofstream` is only for output, then the `std::ios::out` parameter is optional.
+
+
+#### Choices when opening a file
+
+- When we open a file for output, we have a few choices for how we want to open the file
+- The default is the file is opened for truncation
+	- truncation can be called out explicitly using `std::ios::trunc` but this parameter is optional because  it is the default
+
+	```
+	std::ofstream out_file {".../path/to/file.txt", 
+								 std::ios::trunc};
+								 
+	std::ofstream out_file {".../path/to/file.txt"};
+	```
+
+- We can append to the end of an existing file using the `std::ios::app` flag when opening the file.
+ 
+	```
+	std::ofstream out_file {".../path/to/file.txt", 
+								 std::ios::app};
+	```
+	
+- When we want to open a file that exists and we want to set the initial position of the next write to the end of the existing file, we use the `std::ios::ate` flag.
+
+
+- For more context on these various flags, see the [C++ Documentation](https://cplusplus.com/reference/fstream/ofstream/open/) and this [Stack Overflow](https://stackoverflow.com/questions/10359702/c-filehandling-difference-between-iosapp-and-iosate#:~:text=ios%3A%3Aapp%20%22set%20the,time%20you%20flush%20your%20stream.) answer (which also references the documentation).
+
+#### Using the `.open()` method
+
+We can first create an output stream object using `ofstream` then use the `open` method to open it. This is the same process option that we had for input files and is useful when you do not know the file name at compile time.
+
+```
+std::ofstream out_file;
+std::string file_name;
+std::cin >> file_name;
+
+out_file.open(filename , FLAGS}
+```
+
+If you want multiple flags for the file, then separate them with the `|` operator.
+
+#### Checking to see if the file is open
+
+The syntax is the same as for reading from a file
+
+The `is_open` method will return a boolean indicating whether the file is open for processing or not.
+
+```
+if (out_file.is_open()){
+	// read from file
+}
+else {
+	// file could not be opened 
+	// or we cannot read from it
+	// handle this however you want
+}
+```
+
+We can test the stream object itself. If it could not open the file then it will return `false`
+
+```
+if (out_file){
+	// read from file
+}
+else {
+	// file could not be opened 
+	// or we cannot read from it
+	// handle this however you want
+}
+```
+
+
+#### Closing the file
+
+It is incredibly important to close any output file since it flushes any buffers that may not have been written yet.
+
+```
+out_file.close();
+```
+
+#### Writing to a Text File
+
+##### Using the insertion operator (`<<`)
+
+We can use the insertion operator for formatted write the same way we used it with `cout`. This is the most common way of writing to a text file.
+
+```
+int num {100};
+double total {255.67};
+std::string name {"Larry"};
+
+outfile << num << "\n"
+		<< total << "\n"
+		<< name << std::endl;
+```
+
+The above program results in the text file:
+
+```
+100
+255.67
+Larry
+```
+
+Note: `endl` flushes out any unwritten buffers
+
+The `put` method writes a single character to a test file
+
+### Using String Streams
+
+- allow us to read or write from strings in memory like we would read and write to files
+- very powerful - very useful for data validation
+
+- Three classes we can use when using string streams: `stringstream`, `istringstream`, `ostringstream`
+	- `stringstream` allows us to read and write from string streams (equivalent of `fstream`)
+	- `istringstream` - allows us to read from string streams (equivalent of `ifstream`)
+	- `ostringstream` - allows us to write to string streams (equivalent of `ofstream`)
+
+1. `#include <sstream>`
+2. Declare an `stringstream`, `istringstream`, or `ostringstream`
+3. Connect it to a `std::string`
+4. Read/write the data from/to the string steam using formatted I/O
+
+
+#### Example
+
+##### Reading data from a string stream
+
+```
+int num {};
+double total {};
+std::string name {};
+std::string info {"Moe  100.  1234.5"};
+
+std::istringstring iss{info};
+iss >> name >> num >> total;
+```
+
+##### Writing to a string stream
+
+```
+int num {100};
+double total {1234.5};
+std::string name {"Moe"};
+
+std::ostringstring oss{};
+oss << name << " " << num << " " << total;
+std::cout << oss.str() << std::endl;
+
+// outputs "Moe 100 1234.5"
+```
+
+#### Validating Input with `stringstream`
+
+The following code validates user input. 
+
+```
+std::string input{};
+
+std::cout << "Enter an integer: ";
+std::cin >> input;
+
+std::stringstream ss{input};
+```
+
+- The program asks the user to input an integer.
+- The program writes whatever the user enters to the string `input`. 
+- It then creates an `stringstream` object `ss` that it connects to the string `input`.
+
+```
+int value {};
+if (ss >> value){
+	std::cout << "An integer was entered";
+	}
+else {
+	std::cout << "An integer was not entered";
+}
+```
+
+- It then declares an integer `value`
+- If the data in `ss` can be assigned to `value` then that data was an integer
+- If the data in `ss` **cannot** be written to `value`, then the data was **not** an integer
+
+```
+// discards the input buffer
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
+```
+
+This discards the input buffer, look this up 
