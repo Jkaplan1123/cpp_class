@@ -4,6 +4,12 @@
 
 - [C++ Core Guidelines](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#S-errors): a set of tried-and-trude guidelines, rules, and best practrices about coding in C++
 
+### Misc Notes
+
+- casting from one data type to another ([Learn C++](https://www.tutorialspoint.com/cplusplus/cpp_casting_operators.htm#:~:text=A%20cast%20is%20a%20special,as%20any%20other%20unary%20operator.&text=const_cast%20(expr),or%20volatile%20in%20a%20cast.))
+- whenever you see the scope resolution operator `::` with nothing to the left (e.g. `::toupper()`), that means global scope
+
+
 ## Section 5 - Structure of a C++ Program
 
 ### Syntax Terms
