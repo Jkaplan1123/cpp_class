@@ -7,7 +7,15 @@
 
 // Display the array -- note the size MUST be included
 // when passing a std::array to a function
-void display(const std::array<int, 5> &arr) {
+// void display(const std::array<int, 5> &arr) {
+//     std::cout << "[ ";
+//     for (const auto &i: arr)
+//         std::cout << i << " ";
+//     std::cout <<  "]"<< std::endl;
+// }
+
+template <typename T, int N>
+void display(const std::array<T, N> &arr){
     std::cout << "[ ";
     for (const auto &i: arr)
         std::cout << i << " ";
@@ -19,20 +27,20 @@ void test1() {
     std::array<int, 5> arr1 {1,2,3,4,5};     // double {{ }} if C++ 11
     std::array<int, 5> arr2;
     
-    display(arr1);
-    display(arr2);          // Elements are not initialized (contain 'garbage')
+    display<int, arr1.size()>(arr1);
+    display<int, arr1.size()>(arr2);          // Elements are not initialized (contain 'garbage')
         
     arr2  = {10,20,30,40,50};
 
-    display(arr1);
-    display(arr2);
+    display<int, arr1.size()>(arr1);
+    display<int, arr1.size()>(arr2);
     
     std::cout << "Size of arr1 is: " << arr1.size() << std::endl;       //5 
     std::cout << "Size of arr2 is: " << arr2.size() << std::endl;       //5
     
     arr1[0] = 1000;
     arr1.at(1) = 2000;
-    display(arr1);
+    display<int, arr1.size()>(arr1);
 
     std::cout << "Front of arr2: " << arr2.front() << std::endl;        // 10
     std::cout << "Back of arr2: " << arr2.back() << std::endl;          // 50
@@ -43,18 +51,18 @@ void test2() {
     std::array<int, 5> arr1 {1,2,3,4,5};     // double {{ }} is C++ 11
     std::array<int, 5> arr2 {10,20,30,40,50};
     
-    display(arr1);
-    display(arr2);
+    display<int, arr1.size()>(arr1);
+    display<int, arr1.size()>(arr2);
     
     arr1.fill(0);
     
-    display(arr1);
-    display(arr2);
+    display<int, arr1.size()>(arr1);
+    display<int, arr1.size()>(arr2);
     
     arr1.swap(arr2);
     
-    display(arr1);
-    display(arr2);
+    display<int, arr1.size()>(arr1);
+    display<int, arr1.size()>(arr2);
 }
 
 void test3() {
@@ -66,17 +74,17 @@ void test3() {
     std::cout << ptr << std::endl;
     *ptr = 10000;
     
-    display(arr1);
+    display<int, arr1.size()>(arr1);
 }
 
 void test4() {
     std::cout << "\nTest4 =========================" << std::endl;
 
     std::array<int, 5> arr1 {2,1,4,5,3};     // double {{ }} is C++ 11
-    display(arr1);
+    display<int, arr1.size()>(arr1);
     
     std::sort(arr1.begin(), arr1.end());
-    display(arr1);
+    display<int, arr1.size()>(arr1);
 }
 
 void test5() {
