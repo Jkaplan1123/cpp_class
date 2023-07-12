@@ -33,11 +33,11 @@ int main() {
 
     if(!play_copy){
         play_copy.open(outfile_name_debug);
-        std::cout << "Program in debugging mode" << std::endl;
         if(!play_copy){
             std::cerr << "Problem creating output file" << std::endl;
             return 1;
         }
+        std::cout << "Program in debugging mode" << std::endl;
     }
 
     std::string line {};
