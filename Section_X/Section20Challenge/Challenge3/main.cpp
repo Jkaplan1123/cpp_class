@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 #include <iomanip>
+#include <cstring>
 
 // Used for Part1
 // Display the word and count from the 
@@ -50,6 +51,7 @@ std::string clean_string(const std::string &s) {
             continue;
         else
             result += c;
+            // result += std::tolower(c);
     }
     return result;
 }
@@ -57,15 +59,36 @@ std::string clean_string(const std::string &s) {
 // Part1 process the file and builds a map of words and the 
 // number of times they occur in the file
 
-void part1() {
+void part1(std::string infile_name) {
     std::map<std::string, int> words;
     std::string line;       
     std::string word;   
-    std::ifstream in_file {"../words.txt"};
+   
+
+
+
+    std::ifstream in_file {infile_name};
+
     if (in_file) {
         
         // You implement this code
-        
+
+        while(std::getline(in_file, line)){
+            
+
+            line = clean_string(line);
+            std::stringstream ss_line {line};
+            while (ss_line >> word){
+                auto key_search = words.find(word);
+                if (key_search == words.end()){
+                    words.insert(std::make_pair(word, 1));
+                }
+                else{
+                    words.at(word) += 1;
+                }
+            }
+        }
+
         in_file.close();
         display_words(words);
     } else {
@@ -75,14 +98,33 @@ void part1() {
     
 // Part2 process the file and builds a map of words and a 
 // set of line numbers in which the word appears
-void part2() {
+void part2(std::string infile_name) {
     std::map<std::string, std::set<int>> words;
     std::string line;
     std::string word;
-    std::ifstream in_file {"../words.txt"};
+    std::ifstream in_file {infile_name};
     if (in_file) {
      
         // You implement this code
+        
+        int line_num {1};
+
+        while(std::getline(in_file, line)){
+            line = clean_string(line);
+            std::stringstream ss_line {line};
+            while (ss_line >> word){
+                auto key_search = words.find(word);
+                if (key_search == words.end()){
+                    words.insert(std::make_pair(word, std::set<int>{line_num}));
+                }
+                else{
+                    (words.at(word)).insert(line_num);
+                }
+
+            line_num++;
+            }
+        }
+
         
         in_file.close();
         display_words(words);
@@ -92,8 +134,14 @@ void part2() {
 }
 
 int main() {
-    part1();
-    part2();
+
+    // std::string infile_name{"testfile.txt"};
+    // std::string infile_name {"Section20Challenge/Challenge3/testfile.txt"};
+
+    std::string infile_name {"Section20Challenge/Challenge3/words.txt"};
+
+    part1(infile_name);
+    part2(infile_name);
     return 0;
 }
 

@@ -818,7 +818,7 @@ people.emplace_front("David", 45);
 - need header file `#include <list>`
 - Dynamic size
 
-- doubly linked list [^2] of elements - allows us to go from element to element in either direction 
+- doubly linked list [^20.1] of elements - allows us to go from element to element in either direction 
 	- direct element access is not supported 
 	- [doubly linked list](https://www.geeksforgeeks.org/data-structures/linked-list/doubly-linked-list/): each element has a reference to the element immediately before and after it
 - List has a front and a back
@@ -904,4 +904,205 @@ Accessing Elements:
 
 - `.resize()` works the same as for the `std::list`
 
-[^2]: A [linked list](https://www.geeksforgeeks.org/data-structures/linked-list/?ref=lbp) is a data structure where each element contains its data and a pointer to the next element in the list. An [doubly linked list](https://www.geeksforgeeks.org/data-structures/linked-list/doubly-linked-list/) has a pointer to the next element in the list and the previous element. 
+[^20.1]: A [linked list](https://www.geeksforgeeks.org/data-structures/linked-list/?ref=lbp) is a data structure where each element contains its data and a pointer to the next element in the list. An [doubly linked list](https://www.geeksforgeeks.org/data-structures/linked-list/doubly-linked-list/) has a pointer to the next element in the list and the previous element. 
+
+### Associative Containers
+
+- a collection of stored objects that allow fast retreival using a key
+- STL provides sets and maps
+
+#### Sets
+
+- STL has four types of set containers: `std::set`, `std::unordered_set`, `std::multiset`, and `std::unordered_multiset`
+
+##### Regular set (`std::set`)
+
+- `#include <set>` header file
+- similar to a mathematical set
+- all iterators allowed
+
+- No duplicate elements allowed: When initializing a set with duplicates, no error is thrown but the duplicates are ignored
+
+	```
+	std::set<int> s {1, 2, 3, 4, 5, 4, 3, 2, 1};
+	// 1, 2, 3, 4, 5
+	```
+
+- Sets are sorted (ordered by key)
+	  
+
+	```
+	std::set<int> s {2, 10, 8, 1, 11};
+	// 1, 2, 8, 10, 11
+	```
+	
+	- because sets are sorted, you need to make sure that you overload the `<`operator for any custom classes that you want to add to a set
+
+- Inserting Elements - use `.insert()` method and `.emplace()` method
+	- No concept of front and back - no `push_back()`/`push_front()`, `pop_back()`/`pop_front()`, etc. methods 
+	- new elements are added in order
+
+	```
+	std::set<int> s {1,2, 3, 4, 5}
+	
+	s.insert(7); // 1, 2, 3, 4, 5, 7
+	```
+	
+	- if you try to insert a duplicate then it will not be added, but no error will be thrown.
+	- The set class uses the overloaded `<` operator for ordering and for determining if an element is already in a set
+		- This is key, it does **not** use the equality (`==`) operator 
+	- The `.insert()` method returns a `std::pair`
+		-  first attribute is an iterator to either the element that we just inserted or an iterator to the duplicate element already in the set
+		-  the second attribute is a boolean that indicates whether the insertion operation was successful or not.
+
+	- Using the `.insert()` method:
+	
+	
+		```
+		person jack {"Jack", 27};
+		person jena {"Jena", 28};
+		std::set<Person> family;
+		
+		family.insert(jack); // adds jack to the set
+		
+		// adds jena to the set and 
+		// assigns an iterator, boolean pair to result
+		auto result = family.insert(jena);
+		```
+
+- the `.erase()` method can either be passed a key (the specific element) or an iterator to the element that we wante deleted. If that element exists, then it will erase it
+	
+	```
+	std::set <int> s {1, 2, 3, 4, 5};
+	s.erase(3); // erase the 3: 1, 2, 4, 5
+	
+	auto it = s.find(5);
+	if (it != s.end()){
+		s.erase(it); // erase the 5: 1 2 4
+	}
+	```
+
+- The set's `.find()` method is different from the `find()` function in the STL library. It is best to use the set's `.find()` method because it is going to be the best/most efficienct implementation
+
+- we can use the `.count()` method to tell how many times an element is in the set. Even though there can be no duplicates in a set, it is useful for determining if an item is in a set at all.
+
+##### Multi-set (`std::multi_set`)
+
+- also defined in `set` header file
+- like a set except for it allows duplicates
+
+##### Unordered Set (`std::unordered_set`)
+
+- defined in `unordered_set` header file
+- elements are unordered
+- no duplicate elements allowed
+- elements cannot be modified - they must be erased and a new element inserted
+- no reverse iterators are allowed (unordered)
+
+##### Unordered Multi-set (`std::unordered_multiset`)
+
+- also defined in `unordered_set` header file
+- elements are unordered
+- allows duplicate elements
+- no reverse iterators allowed (unordered)
+
+#### Maps
+
+- types of maps: `std::map`, `std::unordered_map`, `std::multimap`, and `std::unordered_multimap`
+- - similar to a python dictionary: elements are stored as (key, value) pairs using `std::pair` objects
+
+
+##### Regular Map (`std::map`)
+
+- defined in the `map` header file (`#include <map>`)
+- elements are ordered by key
+- No duplicate elements (i.e. no duplicate keys)
+- Direct element access using the key
+
+
+- Initialization syntax: 
+
+	```
+	std::map <key_type, value_type> map_name {
+		{key0, value0},
+		{key1, value1},
+		etc...,
+	};
+	```
+	
+- no concept of front or back
+
+###### Inserting Elements
+
+Inserting objects into an `std::map` 
+
+- Option 1: use the `.insert()` method with a key, value pair stored in an `std::pair` data structure
+
+	```
+	std::map<std::string, int> m {
+	        {"Larry", 3},
+	        {"Moe", 1},
+	        {"Curly", 2}
+	    }; 
+	
+	std::pair<std::string, int> bob ("Bob", 25);
+	m.insert(bob);
+	
+	m.insert(std::pair<std::string, int>("Anne", 10));
+	    
+	m.insert(std::make_pair("Joe", 5));
+	```
+
+- Option 2: privde the key in square brackets `[]` and assign the value to it.
+		
+	```
+	m["Frank"] = 22; // inserts Frank
+	```
+
+###### Accessing and Modifying Elements
+
+- Option 1: use the subscript operator. This will add the element if the key is not already in the map (see insertion section above)
+
+	```
+	m["Frank"] = 80; // updates Frank's value
+	```
+
+- Option 2: use the `.at()` method. This will throw an exception if the key is not in the map.
+
+	```
+	m.at("Frank") = 55; // updates Frank's value
+	```
+	
+##### Erasing Elements
+
+To erase an element from a map use the `.erase()` method. The erase method can either take in the key of the key-value pair that you want to remove or it can take in an iterator to that key-value pair.
+
+```
+m.erase("Anne"); // erase Anne
+
+auto iter = m.find("Bob");
+if (iter != m.end()){
+	m.erase(iter); // erase Bob
+}
+```
+
+##### Multimap `std::multimap`
+
+- also included in the `<map>` header file
+- ordered by key
+- allows duplicate elements
+
+##### Unordered Map `std::multi_map`
+
+- included in the `<unordered_map>` header file
+- elements are unordered
+- No duplicate elements allowed
+- No reverse iterators
+
+##### Unordered Multiap `std::unordered_multimap`
+
+- also included in the `<unordered_map>` header file
+- elements are ordered by key
+- No duplicate elements allowed
+- No reverse iterators
+	
