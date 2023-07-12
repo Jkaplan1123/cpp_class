@@ -5,7 +5,7 @@ This folder contains all the source code provided by the instructor of the class
 
 ## Table of Contents
 
-### Section 4 - Getting Started
+<!--### Section 4 - Getting Started-->
 ### Section 5 - Structure of a C++ Program
 ### Section 6 - Variables and Constants
 ### Section 7 - Arrays and Vectors

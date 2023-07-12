@@ -62,6 +62,15 @@
         "typeinfo": "cpp",
         "unordered_map": "cpp",
         "utility": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "__tree": "cpp",
+        "deque": "cpp",
+        "fstream": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "numeric": "cpp",
+        "queue": "cpp",
+        "set": "cpp",
+        "stack": "cpp"
     }
 }

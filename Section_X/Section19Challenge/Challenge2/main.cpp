@@ -15,10 +15,6 @@ class Student{
         int score;
 };
 
-void print_dotted_line(int total_width){
-    std::cout << std::setw(total_width) << std::setfill('-') << "" << std::endl;
-    std::cout << std::setfill(' ');
-}
 
 int main() {
     

@@ -566,7 +566,7 @@ std::for_each(vec.begin(), vec.end(), square);
 std::vector<int> vec {1, 2, 3, 4};
 
 std::for_each(vec.begin(), vec.end(), 
-	[](intx) {std::cout << x * x << " "; })
+	[](int x) {std::cout << x * x << " "; });
 
 //1 4 9 16
 ```
@@ -574,3 +574,334 @@ std::for_each(vec.begin(), vec.end(),
 - this code uses the lambda expression directly in the `for_each` function call
 	- no other code except the vector initialization and the `for_each` function call 	
 - one of the benefits of lambda expressions is that you can define them right where they are being used
+
+
+### STL Sequence Containers Overview
+
+#### Array (`std::array`)
+
+- must include the array header file (`#include <array>`)
+- Fixed size of any type - size must be known at compile time
+- Different from a raw array
+	- object type
+	- always has size associated with it
+	- not just a pointer to the first element 
+- Allows for direct element access
+	- very efficient - element access happens in constant time ($\mathcal{O}(1)$)
+- we can get access to the raw array address if we need to
+	- allows us to use it with libraries that use raw pointers
+- All STL iterators available and do not invalidate (fixed size)
+
+
+##### Initialization and assignment
+
+```
+std::array <type, num_elements> { a, b, c, ... }
+``` 
+
+- since the size of the array must be known at compiler time, we have to provide both the type we want to store in it as well as the size. This is what is found in the angle brackets `<type, num_elements>`
+- the elements of the array are entered in the curly braces `{ }`.
+	- if you enter more elements than the size of the array, you get an error
+	- if you enter fewer elements than the size of the array, then the omitted will have some 0 value
+		- for an array of numerical types, the omitted value will be 0
+		- for an array of strings or similar, the omitted value will be empty 
+	- Will convert c-style string literals to `std::string` types if necessary
+	- In c++11 you need to provide double curly braces (`{ { } }`). Staring in C++14, you just need to provide single curly braces 
+	
+- we can use an assignemnt statement and an initializer list to assign multiple variables to an existing `std::array`
+
+
+	```
+	std::array <int, 5> arry {1, 2, 3, 4, 5};
+	
+	arry = {2, 3, 4, 5, 6}; // [2, 3, 4, 5, 6]
+	
+	arry = {3, 5, 7}; // [3, 5, 7, 0, 0]
+	```
+	
+	- the same rules apply regarinding uninitialized elements apply when doing assignments
+- Remember: unititialized arrays (e.g. with no `{ }`) have garbage values for their elements
+- Both the array's size and its type **must** be included in the function definition when passing a `std::array` to a function.
+	- you can generalize this somewhat by using function templates, but you still have to provide the information somehow
+
+
+```
+#include <iostream>
+#include <array>
+
+int main()
+{
+    
+    std::cout << std::endl;
+    std::cout << "std::array of std::string types" << std::endl;
+    std::cout << "std::array <std::string, 3> array_test { std::string(\"hello\"), \"goodbye\"};" << std::endl;
+    std::cout << "------------------------------------------------------------------------------" << std::endl;
+    std::array<std::string, 3> string_test { std::string("hello"), "goodbye"};
+    for (auto entry : string_test){
+        std::cout << "\"" << entry << "\"" << std::endl;
+    }
+    
+    std::cout << std::endl;
+    std::cout << "std::array of doubles" << std::endl;
+    std::cout << "std::array<double, 3> double_test { 1.4, 2};" << std::endl;
+    std::cout << "------------------------------------------------" << std::endl;
+    std::array<double, 3> double_test { 1.4, 2};
+    for (auto entry : double_test){
+        std::cout << entry << std::endl;
+    }
+    
+    return 0;
+}
+```
+
+##### `std::array` - Common Methods
+
+```
+std::array <int, 5> arr {1, 2, 3, 4, 5};
+
+std::cout << arr.size(); // 5
+
+std::cout << arr.at(0); // 1
+std::cout << arr[1]; // 2
+
+std::cout << arr.front(); // 1
+std::cout << arr.back(); // 5
+
+std::array <int, 0> empty_arr;
+std::cout << arr.empty(); // 0 (false)
+std::cout << empty_arr.empty(); //1 (true)
+
+
+std::cout << arr.max_size(); // 5
+
+std::array <int, 5> swap_arr {6, 7, 8, 9, 10};
+arr.swap(swap_arr); // swaps the 2 arrays so that 
+
+std::cout << arr.fill(1); // [1, 1, 1, 1, 1]
+
+int *data = arr.data(); //get raw array addresss
+``` 
+
+- We can get the size of the array using the `.size()` method.
+- We can access a particular element of an array using either the `.at()` method or the subscript `[]` method
+	- the subscript operator does no bounds checking but the `.at()`. method does throw an exception if we are out of bounds 
+- The `.front()` and `.back()` methods return references to the elements at the front and the back of the array, respectively
+- The `.empty()` returns `true` if the array is empty and `false` if it is not
+	- note that an array initialized will all 0 values will not be empty. The size of the array must be 0
+- The `max_size()` method basically means the size of the array
+	- rarely used with `std::array` but is used with other `stl` containers 
+- The `.swap()` method swaps the values of two arrays
+	- both arrays must be of the same size and type 
+	- in the example code, after `arr.swap(swap_arr);`, `arr` is `[6, 7, 8, 9, 10]` and `swap_arr` is `[1, 2, 3, 4, 5]`. 
+- To `.fill()` method assigns the given value to all elements in the array 
+- The `.data()` method gets access to the underlying raw array
+	- `.data()` returns the address of the raw array which we store in a pointer variable 
+
+##### Documentation and Helpful Links
+
+- [C++ std::array Documentation](https://en.cppreference.com/w/cpp/container/array)
+
+
+#### Vectors (`std::vector`)
+
+- need to include the vector header file (`#include <vector>`)
+- main workhorse of the STL - used to create dynamically sized arrays 
+	- handled behind the scenes
+	- stored in continguous memory 
+- direct element access in constant $ \left( \text{i.e. } \mathcal{O}(1) \right) $ time
+- rapid insertion and deletion at the back of the vector in constant time
+- Insertion or removal of elements (not at the back) done in linear $\left( \text{i.e. } \mathcal{O}(n) \right)$ time
+- all iterators available and they may invalidate (due to changing size)
+
+##### `std::vector` Common Methods
+
+- add elements to the back of the vector using the `push_back` method
+- `.size()` method returns the number of elements in the vector
+- `.capacity()` method returns the current capacity of the vector. When this capacity is exceeeded, the vector will expand dynamically
+- `.max_size()` method returns the maximum size of a vector in our system (this will be a very large number)
+- We can access individual elements using the `.at()` method or the subscript method (`[]`). The `.at()` method has bounds checking while the subscript method (`[]`) does not;
+- Use `.push_back()` to add an element to the end of the vector.
+	- remember that all container classes make copies of the elements they store 
+- Use `.pop_back()` to remove an element from the end of the vector.
+- The `.emplace_back()` method is used to add object types to the end of a vector
+	- takes in the parameters that would normally be passed to the object's constructor then places that object at the end of the vector. 
+	- This is super efficient
+- `.empty()` returns `true` if the vector is empty and `false` if it is not
+- `.swap()` is used to swap to vectors. The vectors must be of the same type but can have different sizes
+- `.insert()` allows us to insert a value anywhere in a vector
+	- we must pass it an iterator that points to the location of the vector where we want to insert the data and the element to be inserted
+	- The element will be inserted just before the element that the iterator is pointing to. That iterator now points at the newly inserted element
+
+	```
+	std::vector<int> vec {1, 2, 3, 4, 5};
+	auto it = std::find(vec.begin(), vec.end(), 3);
+	vec.insert (it, 10); 
+	
+	// [1, 2, 10, 3, 4, 5]
+	``` 
+	
+	- in the code above, we want to insert a `10` before the first `3` in the vector
+	- We can also use the `insert` method to insert a whole sequence of elements
+
+	```
+	std::vector<int> vec2 {10, 20, 30, 40, 50};
+	it = std::find(vec.begin(), vec.end(), 4);
+	vec.insert (it, vec2.begin(), vec2.end()); 
+	
+	// [1, 2, 10, 3, 10, 20, 30, 40, 50, 4, 5]
+	```
+	
+	- in the code above we insert all of `vec2` into `vec` right before the `4`
+
+- we can use `std::sort()` or any other algorithm on vectors 
+
+
+#### Sequence Container Dequeue 
+
+- must `#include <deque>`
+- Acts like a double-ended queue
+- Dynamic size and handled by STL so similart to a vector - unlike a vector, the memory is not stored contiguously
+	- think of a dequeue as a [linked list](https://www.geeksforgeeks.org/data-structures/linked-list/) of vectors
+- Efficiency
+	- direct element access in constant time
+	- insertion and deletion at the front and back in constant time
+	- insertion or removal of elements in linear time
+- All iterators available and may invalidate
+
+
+##### Initialization and Assignment
+
+- `std::deque<int> d0 {1,2,3,4,5}` - standard initialization
+- `std::deque<int> d1 (10,100)` - use an overloaded constructor to declare a deque consisting of `10` integers each initilized to the value `100`
+- supports copy and move semantics for initialization and assignment
+- the front of the deque is the first element and the back is the last element
+
+
+##### `std::deque` Common Methods
+
+- `.push_back()` method adds an element to the end of the deque 
+- `.push_front()` method adds an element to the front of the deque
+- `.pop_back()` method removes an element from the end of the deque
+- `.pop_front()` method removes an element from the front of the deque
+- The `.emplace_front()` and `.emplace_back()` methods are used to add object types to the front or back of a deque, respectively. These methods take in the parameters that would normally be passed to the object's constructor then places that object at the end of the vector. 
+	- these methods are much more efficient than creating an object and then adding it to the deque 
+- Many of the other elements are the same as for vectors and arrays
+
+```
+std::deque<int> d0 {1,2,3,4,5}; // [1, 2, 3, 4, 5]
+d0.push_back(6); // [1, 2, 3, 4, 5, 6]
+d0.push_front(0); // [0, 1, 2, 3, 4, 5, 6]
+
+d0.pop_front; // [0, 1, 2, 3, 4, 5]
+d0.pop_back; // [1, 2, 3, 4, 5]
+
+
+std::deque<Person> people;
+Person p1 ("Alice", 15);
+
+people.push_back(p1);
+people.push_front(Person("Bob", 29);
+
+people.emplace_back("Charlie", 8);
+people.emplace_front("David", 45);
+```
+
+#### List (`std::list`) and Forward List (`std::forward_list`)
+
+- both are sequence containers
+- store their elements in non-contiguous memory
+- No direct access to elements - no `.at()` method or subscript operator (`[]`).
+- very efficient for inserting and deleting elements once an element is found
+
+##### `std::list`
+
+- need header file `#include <list>`
+- Dynamic size
+
+- doubly linked list [^2] of elements - allows us to go from element to element in either direction 
+	- direct element access is not supported 
+	- [doubly linked list](https://www.geeksforgeeks.org/data-structures/linked-list/doubly-linked-list/): each element has a reference to the element immediately before and after it
+- List has a front and a back
+- Rapid insertion and deletion of elements anywhere in the container (constant time)
+	- requires that we have an iterator to the element that we want to remove or insert before - usualy done using the `find` method
+- We can use all the iterators, but they may become invalid when the corresponding element is deleted
+- List is a good choice for when you need a container where you will have lots of insertions and removals but where you don't need direct access to the elements
+
+###### `std::list` Initialization
+
+- `std::list<int> l0 {1,2,3,4,5}` - standard initialization
+- `std::list<int> l1 (10,100)` - use an overloaded constructor to declare a deque consisting of `10` integers each initilized to the value `100`
+
+###### `std::list` Methods to add/remove elements
+
+Accessing Elements:
+- remember that we do not have access to the `.at()` method or the subscript operator (`[]`)
+
+
+
+- a list uses the `.push_back()`, `.push_front()`, `.emplace_back()` and `.emplace_front()` methods to efficiently add elements to the front or the back in the same way the deque does
+- a list uses the `.pop_back()` and `.pop_front()`, methods to efficiently remove elements from front or the back in the same way the deque does
+- `.insert()` method requires the new element we want to insert and an iterator to the element that we want to insert new element before
+- `.erase()` method requires an iterator pointing to the element that we want to erase
+
+	```
+	std::list<int> l {1, 2, 3, 4, 5};
+	auto iter = std::find(l.begin(), l.end(), 3);
+	
+	l.insert(iter, 10); // [1 2 10 3 4 5]
+	l.erase(it); // erases the 3: [1, 2, 10, 4, 5]
+	```
+
+
+- `.resize()` allows us to resize the list (of length $m$) to a desired length $\left( n \right)$
+	- if the list is longer than the resized length $n$ (i.e. if $m > n$), than the first $n$ elements will be kept and the $\left( n+1 \right) ^{\text{th}}$ and greater elements will be deleted
+
+		```
+		l = {1, 2, 3, 4, 5};
+		l.resize(2); // [1, 2]
+		```
+	
+	- if the current list length $\left( m \right)$ is shorter than the resized list length $\left( n \right)$, then $n - m$  elements will be created (using the default initilizer for that type) and appended on to the end of the list
+
+		```
+		std::list<int> l {1, 2};
+		l.resize(5); // [1, 2, 0, 0, 0]
+		```
+
+###### Traversing an `std::list` 
+
+- use a range based for loop or use iterators
+
+##### Forward List (`std::forward_list`)
+
+- must include the forward list header file (`#include <forward_list>`)
+- The forward list is like the regular `std::list`, except it is only singly linked. This means that it can only be traversed in one direction. 
+	- advantage: less overhead because you only need one pointer per element (rather than two in a doubly linked list)
+	- generally we only want to traverse a list in one direction
+- The forward list has no concept of back, only front
+	- it does not make sense to go to the back of a list and then not be able to traverse backwards 
+	- this means that there is no `.back()` method
+	- reverse iterators not availiable   
+
+###### `std::forward_list` methods
+
+- because there is no concept of a back, there is no `.back()` method
+- the forward list has `.push_front()`, `.pop_front()`, and `.emplace_front()`, but not their "back" equivalents
+- The `.size()` method is not supported (for performance reasons)
+	- if you need to track the size of a forward list, you need to do it outside the list
+
+
+- Since the forward list is singly-linked, it makes sense to insert and delete elements **after** the iterator reference
+
+	```
+	std::forward_list<int> l {1, 2, 3, 4, 5};
+	auto iter = std::find(l.begin(), l.end(), 3);
+	
+	l.insert_after(iter, 10); // [1 2 3 10 4 5]
+	l.emplace_after(iter, 100); //[1 2 3 100 10 4 5]
+	l.erase_after(it); // erases the 100: [1, 2, 3, 10, 4, 5]
+	```
+
+- `.resize()` works the same as for the `std::list`
+
+[^2]: A [linked list](https://www.geeksforgeeks.org/data-structures/linked-list/?ref=lbp) is a data structure where each element contains its data and a pointer to the next element in the list. An [doubly linked list](https://www.geeksforgeeks.org/data-structures/linked-list/doubly-linked-list/) has a pointer to the next element in the list and the previous element. 

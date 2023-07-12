@@ -325,7 +325,7 @@ Because both enumerators are unscoped, you cannot have two enumerators with the 
 
 #### Using Scoped Enumerations
 
-- Using if and switch statements with scoped enumerations is idential to that of unscoped, ut with the additional requirment of specifying enumerator scopes. 
+- Using if and switch statements with scoped enumerations is idential to that of unscoped, but with the additional requirment of specifying enumerator scopes. 
 
 - Everything you do with unscoped enumeration, you can also do with scoped enumeration so long as you specify the scope of its enumerators
 

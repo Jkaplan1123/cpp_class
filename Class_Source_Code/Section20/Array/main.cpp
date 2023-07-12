@@ -14,6 +14,7 @@
 //     std::cout <<  "]"<< std::endl;
 // }
 
+// function template so you can have arrays of different sizes and types
 template <typename T, int N>
 void display(const std::array<T, N> &arr){
     std::cout << "[ ";
