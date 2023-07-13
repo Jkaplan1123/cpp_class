@@ -239,6 +239,7 @@ void test9()
 	
 	int y {100};
 	
+	//These two things are equivalent. Lambda is basically a creating function object
 	Lambda lambda1(y);
 	auto lambda2 = [y] (int x) {std::cout << x + y << std::endl;};
 	
@@ -252,7 +253,7 @@ class People {
     int max_people;
 public:
     People(int max=10) : max_people(max) { }
-    People(const People &p) = default;
+    People(const People &p) = default; // copy constructor
     void add(std::string name, int age) {
         people.emplace_back(name, age);
     }
