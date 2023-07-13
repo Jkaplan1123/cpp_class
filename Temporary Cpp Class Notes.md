@@ -1105,4 +1105,94 @@ if (iter != m.end()){
 - elements are ordered by key
 - No duplicate elements allowed
 - No reverse iterators
-	
+
+### STL Adapter Container
+
+#### Stack (`std::stack`)
+
+- Last in First Out (LIFO) data structure
+	- All operations occur on one end of the stack (the top)
+	- no iterators are supported
+		- which means that we cannot use it with STL algorithms
+		- Also makes it difficult to display a stack
+- Implemented as an adapter over other STL containers
+	- can be a deque (default), vector, or list
+- Requires the stack header file `#include <stack>`
+
+
+##### Stack Methods
+
+- `push` - insert an element at (add an element to) the top of the stack
+- `pop` - remove an element from the top of the stack
+	- returns nothing 
+- `top` - access the top element of the stack (without removing it)
+	- returns a reference to the element at the top but does not remove it	
+- `empty` - is the stack empty
+- `size` the number of elements in the stack
+
+
+##### Initialization
+
+- We can choose which underlying container is used when creating our stack object
+- The default is the deque, can also be a vector or a list
+
+```
+std::stack<int> s; // deque
+std::stack<int, std::vector<int>> s1; // vector
+std::stack<int, std::list<int>> s2; // list
+std::stack<int, std::deque<int>> s3; // deque
+```
+
+
+#### Queue (`std::queue`)
+
+- First in First Out (FIFO) data structure
+	- Elements are pushed (added to) the back and popped (removed) from the front 
+- no iterators are supported
+	- which means that we cannot use it with STL algorithms
+	- Also makes it difficult to display a queue
+- Implemented as an adapter over other STL containers that have a front and a back
+	- can be a deque (default) or list
+- Requires the queue header file `#include <queue>`
+
+##### Queue Methods
+
+- `push` - insert an element at (add an element to) the back of the queue
+- `pop` - remove an element from the front of the queue
+	- returns nothing 
+- `front` - access the element at the front (without removing it)
+- `back` - access the element at the back (without removing it)
+- `empty` - is the queue empty
+- `size` the number of elements in the queue
+
+
+##### Initialization
+
+- We can choose which underlying container is used when creating our stack object
+- The default is the deque, can also be a list
+
+```
+std::queue<int> q; // deque
+std::queue<int, std::list<int>> q1; // list
+std::queue<int, std::deque<int>> q2; // deque
+```
+
+#### Priority Queue (`std::priority_queue`)
+
+- allows insertions and removal in order from the front of the container
+- elements are stored internally as a vector by default - heap data structure (different than the memory heap) used behind the scenes
+- Elements are inserted in **priority** order - meaning the largest value will always be at the front
+	- no guarantee of order if items have the same priority
+	- think of it like liquids of different densities floating on top of each other (at steady state) 
+- No iterators are supported
+- requires the queue header file (`#include <queue>`)
+
+
+##### Priority Queue Methods
+
+- `push` - insert an element into sorted order
+- `pop` - remove an element from the front of the queue
+	- returns nothing 
+- `top` - access the greatest (top) element in the priority queue (without removing it)
+- `empty` - is the queue empty
+- `size` - returns 	the number of elements in the queue

@@ -12,7 +12,28 @@ bool is_palindrome(const std::string& s)
 {
     // You must implement this function.
     // Since we are learning the STL - use a stack and a queue to solve the problem.
-    return false;
+
+    std::stack<char> phrase_stack;
+    std::queue<char> phrase_queue;
+
+    for(auto &ch : s){
+        if(isalpha(ch)){
+            phrase_stack.push(tolower(ch));
+            phrase_queue.push(tolower(ch));
+        }
+    }
+
+    while(phrase_queue.size() > 0){
+        if (phrase_queue.front() != phrase_stack.top()){
+            return false;
+        }
+        else{
+            phrase_queue.pop();
+            phrase_stack.pop();
+        }
+    }
+
+    return true;
 }
 
 int main()
@@ -24,7 +45,9 @@ int main()
     std::cout << std::boolalpha;
     std::cout << std::setw(8) << std::left << "Result" << "String" << std::endl;
     for(const auto& s : test_strings) {
-        std::cout << std::setw(8) << std::left << is_palindrome(s)  << s << std::endl;
+        std::cout << std::setw(8) << std::left << is_palindrome(s);
+        std::cout << " | ";
+        std::cout << s << std::endl;
     }
     std::cout << std::endl;
     return 0;
