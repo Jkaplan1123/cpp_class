@@ -1,2 +1,0 @@
-/Users/jack/Documents/GitHub/cpp_class/Section_4/FirstProgram/Section4Challenge/main.cpp
-/Users/jack/Documents/GitHub/cpp_class/Section_4/FirstProgram/FirstProgram/main.cpp
